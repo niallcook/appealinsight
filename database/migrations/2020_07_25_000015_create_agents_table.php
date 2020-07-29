@@ -22,7 +22,7 @@ class CreateAgentsTable extends Migration
     {
         Schema::create($this->tableName, function (Blueprint $table) {
             $table->id();
-            $table->string('name', 255)->unique();
+            $table->string('name', 255)->unique()->index();
         });
     }
 

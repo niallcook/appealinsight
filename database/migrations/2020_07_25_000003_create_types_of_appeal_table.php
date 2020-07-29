@@ -10,7 +10,7 @@ class CreateTypesOfAppealTable extends Migration
      * Schema table name to migrate
      * @var string
      */
-    public $tableName = 'types_of_appeal';
+    public $tableName = 'types_of_appeals';
 
     /**
      * Run the migrations.
@@ -22,7 +22,7 @@ class CreateTypesOfAppealTable extends Migration
     {
         Schema::create($this->tableName, function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
+            $table->string('name')->unique()->index();
         });
     }
 

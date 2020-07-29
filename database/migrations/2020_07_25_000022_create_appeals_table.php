@@ -22,10 +22,10 @@ class CreateAppealsTable extends Migration
     {
         Schema::create($this->tableName, function (Blueprint $table) {
             $table->id();
-            $table->integer('reference')->unique();
+            $table->integer('reference')->unique()->index();
             $table->timestamp('received_date');
             $table->timestamp('valid_date');
-            $table->timestamp('start_date');
+            $table->timestamp('start_date')->nullable();
             $table->timestamp('decision_date');
             $table->bigInteger('appellant_id')->unsigned();
             $table->bigInteger('lpa_id')->unsigned();
@@ -57,8 +57,8 @@ class CreateAppealsTable extends Migration
             $table->string('enforcement_grounds', 50)->nullable();
             $table->text('development_or_allegation')->nullable();
             $table->bigInteger('agent_id')->nullable()->unsigned();;
-            $table->bigInteger('type_of_appeal_id')->unsigned();
-            $table->bigInteger('decision_type_id')->unsigned();
+            $table->bigInteger('type_of_appeal_id')->unsigned()->nullable();
+            $table->bigInteger('decision_id')->unsigned();
             $table->bigInteger('procedure_id')->unsigned();
             $table->bigInteger('appeal_type_reason_id')->nullable()->unsigned();;
             $table->bigInteger('reason_for_the_appeal_id')->nullable()->unsigned();;
@@ -107,13 +107,13 @@ class CreateAppealsTable extends Migration
 
             $table->foreign('type_of_appeal_id')
                 ->references('id')
-                ->on('types_of_appeal')
+                ->on('types_of_appeals')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
 
-            $table->foreign('decision_type_id')
+            $table->foreign('decision_id')
                 ->references('id')
-                ->on('decision_types')
+                ->on('decisions')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
 

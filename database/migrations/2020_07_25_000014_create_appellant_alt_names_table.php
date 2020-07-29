@@ -22,7 +22,7 @@ class CreateAppellantAltNamesTable extends Migration
     {
         Schema::create($this->tableName, function (Blueprint $table) {
             $table->increments('id');
-            $table->string('alt_name', 255)->unique();
+            $table->string('alt_name', 255)->index();
             $table->bigInteger('appellant_id')->unsigned();
 
             $table->foreign('appellant_id')

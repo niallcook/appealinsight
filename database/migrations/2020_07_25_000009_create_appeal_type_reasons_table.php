@@ -22,7 +22,7 @@ class CreateAppealTypeReasonsTable extends Migration
     {
         Schema::create($this->tableName, function (Blueprint $table) {
             $table->id();
-            $table->string('name')->nullable();
+            $table->string('name')->nullable()->index();
         });
     }
 

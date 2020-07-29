@@ -22,7 +22,7 @@ class CreateReasonsForTheAppealTable extends Migration
     {
         Schema::create($this->tableName, function (Blueprint $table) {
             $table->id();
-            $table->string('name', 50)->unique();
+            $table->string('name')->index();
         });
     }
 

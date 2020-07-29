@@ -10,7 +10,7 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('js/app.js') }}"></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -49,6 +49,11 @@
                                 </li>
                             @endif
                         @else
+                            @if (Auth::user()->id)
+                                <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#uploadFile">
+                                    Upload file
+                                </button>
+                            @endif
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }} <span class="caret"></span>
@@ -74,7 +79,77 @@
 
         <main class="py-4">
             @yield('content')
+
+            <div class="modal fade" id="uploadFile" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header justify-content-center">
+{{--                            <h4 class="modal-title" id="modelHeading"></h4>--}}
+                            <div class="responseInfo" role="alert"></div>
+                        </div>
+                        <div class="modal-body">
+                            <form id="fileForm" name="fileForm" class="form-horizontal">
+                                <div class="form-group form-container">
+                                    <label for="csv_file" class="col-md-4 control-label">Import CSV</label>
+                                    <input type="file" id="csv_file" name="csv_file">
+                                </div>
+                                <div class="col-sm-offset-2 col-sm-10">
+                                    <button type="submit" class="btn btn-primary" id="send" value="send">Send
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
+    <script type="text/javascript">
+        $(document).ready(function (e) {
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+
+            });
+
+            $('#fileForm').submit(function (e) {
+                e.preventDefault();
+
+                $('.responseInfo').empty();
+
+                let formData = new FormData(this);
+                $.ajax({
+                    url: "{{ url('upload-file') }}",
+                    type: "POST",
+                    data: formData,
+                    cache:false,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        $('.responseInfo').append('<div class="alert alert-success" role="alert">\n' +
+                            data.message + '</div>');
+
+
+                        setTimeout(() => {
+                            $('#fileForm').trigger("reset");
+                            $('.responseInfo').empty();
+                            $('#uploadFile').modal('hide');
+                        }, 1200);
+                    },
+                    error: function (data) {
+                        const errors = data.responseJSON.errors.csv_file;
+                        console.log(errors)
+
+                        errors.forEach(function (element) {
+                            $('.responseInfo').append('<div class="alert alert-danger" role="alert">\n' +
+                                element + '</div>');
+                        });
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

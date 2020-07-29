@@ -22,7 +22,7 @@ class CreateSiteCountriesTable extends Migration
     {
         Schema::create($this->tableName, function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
+            $table->string('name')->unique()->index();
         });
     }
 

@@ -23,7 +23,7 @@ class CreateAgentAltNamesTable extends Migration
         Schema::create($this->tableName, function (Blueprint $table) {
             $table->id();
             $table->bigInteger('agent_id')->unsigned();
-            $table->string('alt_name', 255)->unique();
+            $table->string('alt_name', 255)->index();
 
             $table->foreign('agent_id')
                 ->references('id')

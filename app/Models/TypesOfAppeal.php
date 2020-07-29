@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ReasonForTheAppeal extends Model
+class TypesOfAppeal extends Model
 {
+
     protected $fillable = ['name'];
 
-    protected $table = 'reasons_for_the_appeal';
+    protected $table = 'types_of_appeals';
 
     public $timestamps = false;
 }

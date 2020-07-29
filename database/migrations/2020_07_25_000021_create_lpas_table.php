@@ -22,9 +22,10 @@ class CreateLpasTable extends Migration
     {
         Schema::create($this->tableName, function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
+            $table->string('name');
             $table->string('ons_lpa_code', 50);
             $table->unique(['name', 'ons_lpa_code']);
+            $table->index(['name', 'ons_lpa_code']);
         });
     }
 

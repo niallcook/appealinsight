@@ -14,9 +14,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('home');
 });
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::group(['middleware' => 'auth'], function () {
+    Route::get('/home', 'HomeController@index')->name('home');
+    Route::post('/upload-file', 'FileController@uploadFile')->name('upload-file');
+//    Route::get('/parse-csv', 'FileController@parse');
+//    Route::get('/create-test-csv', 'FileController@createTestCsv');
+});
