@@ -24,6 +24,7 @@ use App\Models\SiteTown;
 use App\Models\TypeDetail;
 use App\Models\TypesOfAppeal;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use League\Csv\Reader;
 use League\Csv\Writer;
@@ -64,6 +65,7 @@ class ParseService
             }
         }
         $data = $csv
+            ->setLimit(2000)
             ->setOffset(1)
             ->fetchAssoc($titles);
 
@@ -381,7 +383,7 @@ class ParseService
                 'enforcement_grounds_count' =>                          (int) $item['Enforcement Grounds Count'],
                 'enforcement_grounds' =>                                (string) $item['Enforcement Grounds'],
                 'development_or_allegation' =>                          (string) $item['Development Or Allegation'],
-                'type_of_appeal_id,' =>                                 null,
+                'type_of_appeal_id' =>                                  null,
                 'lpa_id' =>                                             (int) $lpaDataCache[$lpaKey],
                 'appellant_id' =>                                       (int) $appellantDataCache[$appellantKey],
                 'development_type_id' =>                                (int) $developmentTypeDataCache[$developmentTypeKey],
@@ -389,7 +391,7 @@ class ParseService
                 'site_town_id' =>                                       (int) $siteTownDataCache[$siteTownKey],
                 'site_country_id' =>                                    (int) $siteCountryDataCache[$siteCountryKey],
                 'site_county_id' =>                                     (int) $siteCountyDataCache[$siteCountyKey],
-                'agent_id,' =>                                          (int) $agentDataCache[$agentKey],
+                'agent_id' =>                                           (int) $agentDataCache[$agentKey],
                 'decision_id' =>                                        (int) $decisionDataCache[$decisionKey],
                 'procedure_id' =>                                       (int) $procedureDataCache[$procedureKey],
                 'appeal_type_reason_id' =>                              (int) $appealTypeReasonDataCache[$appealTypeReasonKey],
@@ -413,6 +415,7 @@ class ParseService
                 $appealData
             );
 
+            Cache::put('processing', false);
         }
     }
 

@@ -158,6 +158,8 @@ class CreateAppealsTable extends Migration
                 ->on('site_counties')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
+
+            $table->timestamps();
         });
     }
 

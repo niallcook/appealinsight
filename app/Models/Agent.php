@@ -11,4 +11,10 @@ class Agent extends Model
     protected $table = 'agents';
 
     public $timestamps = false;
+
+    public function appeals()
+    {
+        return $this->hasMany(Appeal::class);
+    }
+
 }

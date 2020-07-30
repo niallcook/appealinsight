@@ -58,6 +58,9 @@ class Appeal extends Model
 
     protected $table = 'appeals';
 
-    public $timestamps = false;
+    public function agent()
+    {
+        return $this->belongsTo(Agent::class);
+    }
 
 }

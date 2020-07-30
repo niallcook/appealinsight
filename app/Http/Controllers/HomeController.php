@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Appeal;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Yajra\DataTables\Facades\DataTables;
 
 class HomeController extends Controller
 {
@@ -16,13 +19,8 @@ class HomeController extends Controller
         $this->middleware('auth');
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function index()
+
+    public function index(Request $request)
     {
-        return view('home');
     }
 }
