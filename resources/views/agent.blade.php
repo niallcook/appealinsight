@@ -50,9 +50,21 @@
                         data: 'agent_id',
                         name: 'agent_id',
                     },
-                    {data: 'name', name: 'name'},
-                    {data: 'total', name: 'total'},
-                    {data: 'success', name: 'success'},
+                    {
+                        data: 'name',
+                        name: 'name'
+                    },
+                    {
+                        data: 'total',
+                        name: 'total'
+                    },
+                    {
+                        data: 'success',
+                        name: 'success',
+                        render: function (data) {
+                            return data + '%'
+                        }
+                    },
                     // {data: 'action', name: 'action', orderable: false, searchable: false},
                 ]
             });

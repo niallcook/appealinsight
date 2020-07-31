@@ -15,7 +15,7 @@ class ApiAgentController extends Controller
     public function getAgents(Request $request)
     {
         $data = DB::select('select ap.agent_id, ag.name, COUNT(*) as total,
-            (
+            round((
                 (SELECT COUNT(*)
                 FROM appeals
                 INNER JOIN decisions d ON d.id = appeals.decision_id
@@ -23,7 +23,7 @@ class ApiAgentController extends Controller
                     d.name = \'Quashed on Legal Grounds\' OR d.name = \'Planning Permission Granted\' OR d.name = \'Notice Quashed\'
                     OR d.name = \'Allowed with Conditions\' OR d.name = \'Allowed\' OR d.name = \'Allowed in Part\'
                 )
-            ) / (SELECT COUNT(*) FROM appeals WHERE agent_id = ag.id GROUP BY agent_id)) * 100 as success,
+            ) / (SELECT COUNT(*) FROM appeals WHERE agent_id = ag.id GROUP BY agent_id)) * 100, 2) as success,
             (
                 (SELECT COUNT(*)
                 FROM appeals
