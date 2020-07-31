@@ -37,6 +37,10 @@
     <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
     <script type="text/javascript">
         $(function () {
+
+            let processing_parse = JSON.parse("{{ json_encode($processing_parse) }}");
+            $('.btn-upload-file').prop('disabled', processing_parse);
+
             $('.data-table').DataTable({
                 processing: true,
                 serverSide: true,

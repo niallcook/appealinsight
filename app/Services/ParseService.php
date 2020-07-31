@@ -26,7 +26,6 @@ use App\Models\{
     TypeDetail,
     TypeOfAppeal
 };
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use League\Csv\{
     Reader,
@@ -422,8 +421,6 @@ class ParseService
                 ],
                 $appealData
             );
-
-            Cache::put('processing', false);
         }
     }
 
