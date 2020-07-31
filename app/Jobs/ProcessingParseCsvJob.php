@@ -43,6 +43,7 @@ class ProcessingParseCsvJob implements ShouldQueue
             Cache::put('processing', false);
         } catch (\Exception $exception) {
             Log::error('Something went wrong ' . $exception->getMessage());
+            Cache::put('processing', false);
 //            $this->failed($exception->getMessage());
         }
     }
@@ -50,13 +51,12 @@ class ProcessingParseCsvJob implements ShouldQueue
     /**
      * Handle a job failure.
      *
-//     * //     * @param \Exception $exception
-//     * @param $exception
+     * @param \Exception $exception
      * @return void
      */
     public function failed(\Exception $exception)
-//    public function failed($exception)
     {
         Log::error('Something went wrong ' . $exception);
+        Cache::put('processing', false);
     }
 }
