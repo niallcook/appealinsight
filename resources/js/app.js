@@ -1,3 +1,4 @@
 require('./bootstrap');
 
-import './general';
+// require('./general');
+

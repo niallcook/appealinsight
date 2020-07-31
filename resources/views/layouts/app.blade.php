@@ -17,6 +17,7 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
 
     <!-- Styles -->
+    @yield('stylesheets')
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
 <body>
@@ -49,8 +50,9 @@
                                 </li>
                             @endif
                         @else
-                            @if (Auth::user()->id)
-                                <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#uploadFile">
+                            @if (Auth::user()->role->id === 2)
+                                <button type="submit" class="btn btn-primary btn-upload-file" data-toggle="modal" data-target="#uploadFile"
+                                        {{ $processing_parse ? 'disabled' : '' }}>
                                     Upload file
                                 </button>
                             @endif
@@ -79,6 +81,7 @@
 
         <main class="py-4">
             @yield('content')
+            @yield('table')
 
             <div class="modal fade" id="uploadFile" aria-hidden="true">
                 <div class="modal-dialog">
@@ -104,7 +107,8 @@
             </div>
         </main>
     </div>
-    <script type="text/javascript">
+    @yield('scripts')
+    <script>
         $(document).ready(function (e) {
 
             $.ajaxSetup({
@@ -119,6 +123,8 @@
 
                 $('.responseInfo').empty();
 
+                console.log(this)
+// debugger
                 let formData = new FormData(this);
                 $.ajax({
                     url: "{{ url('upload-file') }}",
@@ -128,9 +134,11 @@
                     contentType: false,
                     processData: false,
                     success: function (data) {
+                        console.log(data)
                         $('.responseInfo').append('<div class="alert alert-success" role="alert">\n' +
                             data.message + '</div>');
 
+                        $('.btn-upload-file').prop('disabled', true);
 
                         setTimeout(() => {
                             $('#fileForm').trigger("reset");
@@ -139,8 +147,8 @@
                         }, 1200);
                     },
                     error: function (data) {
+                        console.log(data)
                         const errors = data.responseJSON.errors.csv_file;
-                        console.log(errors)
 
                         errors.forEach(function (element) {
                             $('.responseInfo').append('<div class="alert alert-danger" role="alert">\n' +

@@ -23,10 +23,10 @@ class CreateAppealsTable extends Migration
         Schema::create($this->tableName, function (Blueprint $table) {
             $table->id();
             $table->integer('reference')->unique()->index();
-            $table->timestamp('received_date');
-            $table->timestamp('valid_date');
-            $table->timestamp('start_date')->nullable();
-            $table->timestamp('decision_date');
+            $table->date('received_date')->nullable();
+            $table->date('valid_date')->nullable();
+            $table->date('start_date')->nullable();
+            $table->date('decision_date')->nullable();
             $table->bigInteger('appellant_id')->unsigned();
             $table->bigInteger('lpa_id')->unsigned();
             $table->bigInteger('inspector_id')->nullable()->unsigned();
@@ -52,7 +52,7 @@ class CreateAppealsTable extends Migration
             $table->bigInteger('site_town_id')->unsigned();
             $table->bigInteger('site_country_id')->nullable()->unsigned();;
             $table->bigInteger('site_county_id')->nullable()->unsigned();;
-            $table->timestamp('call_in_date')->nullable();
+            $table->date('call_in_date')->nullable();
             $table->integer('enforcement_grounds_count')->nullable();
             $table->string('enforcement_grounds', 50)->nullable();
             $table->text('development_or_allegation')->nullable();
@@ -66,8 +66,8 @@ class CreateAppealsTable extends Migration
             $table->bigInteger('jurisdiction_id')->unsigned();
             $table->bigInteger('link_status_id')->nullable()->unsigned();;
             $table->integer('lead_case')->nullable();
-            $table->timestamp('date_recovered')->nullable();
-            $table->timestamp('date_not_recovered_or_derecovered')->nullable();
+            $table->date('date_recovered')->nullable();
+            $table->date('date_not_recovered_or_derecovered')->nullable();
 
             $table->foreign('appellant_id')
                 ->references('id')

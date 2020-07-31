@@ -4,9 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TypesOfAppeal extends Model
+class TypeOfAppeal extends Model
 {
-
     protected $fillable = ['name'];
 
     protected $table = 'types_of_appeals';

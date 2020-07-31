@@ -14,14 +14,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return redirect()->route('agent');
+    return redirect()->route('agent.index');
 });
 
 Auth::routes();
 
-//Route::group(['middleware' => 'auth'], function () {
+Route::group(['middleware' => 'auth'], function () {
     Route::resource('agent', 'AgentController');
     Route::post('/upload-file', 'FileController@uploadFile')->name('upload-file');
     Route::get('/parse-csv', 'FileController@parse');
 //    Route::get('/create-test-csv', 'FileController@createTestCsv');
-//});
+});

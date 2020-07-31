@@ -4,30 +4,34 @@
 namespace App\Services;
 
 
-use App\Models\Agent;
-use App\Models\AgentAltName;
-use App\Models\Appeal;
-use App\Models\AppealTypeReason;
-use App\Models\Appellant;
-use App\Models\AppellantAltName;
-use App\Models\Decision;
-use App\Models\DevelopmentType;
-use App\Models\Inspector;
-use App\Models\Jurisdiction;
-use App\Models\LinkStatus;
-use App\Models\Lpa;
-use App\Models\Procedure;
-use App\Models\ReasonForTheAppeal;
-use App\Models\SiteCountry;
-use App\Models\SiteCounty;
-use App\Models\SiteTown;
-use App\Models\TypeDetail;
-use App\Models\TypesOfAppeal;
 use Carbon\Carbon;
+use App\Models\{
+    Agent,
+    AgentAltName,
+    Appeal,
+    AppealTypeReason,
+    Appellant,
+    AppellantAltName,
+    Decision,
+    DevelopmentType,
+    Inspector,
+    Jurisdiction,
+    LinkStatus,
+    Lpa,
+    Procedure,
+    ReasonForTheAppeal,
+    SiteCountry,
+    SiteCounty,
+    SiteTown,
+    TypeDetail,
+    TypeOfAppeal
+};
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use League\Csv\Reader;
-use League\Csv\Writer;
+use League\Csv\{
+    Reader,
+    Writer
+};
 
 class ParseService
 {
@@ -36,7 +40,7 @@ class ParseService
     {
         $csv = Reader::createFromPath($fileFrom, 'r');
         $titles = [];
-        Log::error('TEESSST FILEeee222');
+
         foreach ($csv->fetchOne() as $name) {
             $name = preg_replace('/[^A-Za-z0-9 \-]/', '', $name);
             $titles[] = $name;
@@ -65,7 +69,7 @@ class ParseService
             }
         }
         $data = $csv
-            ->setLimit(2000)
+//            ->setLimit(2000)
             ->setOffset(1)
             ->fetchAssoc($titles);
 
@@ -75,6 +79,7 @@ class ParseService
         $siteTownDataCache = [];
         $siteCountyDataCache = [];
         $siteCountryDataCache = [];
+        $typeOfAppealDataCache = [];
         $procedureDataCache = [];
         $appealTypeReasonDataCache = [];
         $reasonForTheAppealDataCache = [];
@@ -135,7 +140,6 @@ class ParseService
             }
             // Development Type - END
 
-
             // Site Town updating and caching
             $siteTownKey = $item['Site Town'];
             if(!isset($siteTownDataCache[$siteTownKey])) {
@@ -181,14 +185,20 @@ class ParseService
             }
             // Site Country - END
 
-//            $typeOfAppealData = [
-//                'name' => $item['Type of Appeal']
-//            ];
-//
-//            $typeOfAppealData = TypesOfAppeal::updateOrCreate(
-//                $typeOfAppealData,
-//                $typeOfAppealData
-//            );
+            // Type of Appeal updating and caching
+            $typeOfAppealKey = $item['Type of Appeal'];
+            if(!isset($typeOfAppealDataCache[$typeOfAppealKey])) {
+                $typeOfAppealData = [
+                    'name' => $item['Type of Appeal']
+                ];
+
+                $typeOfAppealData = TypeOfAppeal::updateOrCreate(
+                    $typeOfAppealData,
+                    $typeOfAppealData
+                );
+                $typeOfAppealDataCache[$typeOfAppealKey] = $typeOfAppealData->id;
+            }
+            // Type of Appeal - END
 
             // Procedure updating and caching
             $procedureKey = $item['Procedure'];
@@ -264,7 +274,6 @@ class ParseService
             }
             // Jurisdiction - END
 
-
             // Link Status updating and caching
             $linkStatusKey = $item['Link Status'];
             if(!isset($linkStatusDataCache[$linkStatusKey])) {
@@ -310,7 +319,6 @@ class ParseService
                 $agentAltNameDataCache[$agentAltNameKey] = $agentAltNameData->id;
             }
             // Agent Alt Name - END
-
 
             // Appellant updating and caching
             $appellantKey = $item['Appellant'];
@@ -383,7 +391,7 @@ class ParseService
                 'enforcement_grounds_count' =>                          (int) $item['Enforcement Grounds Count'],
                 'enforcement_grounds' =>                                (string) $item['Enforcement Grounds'],
                 'development_or_allegation' =>                          (string) $item['Development Or Allegation'],
-                'type_of_appeal_id' =>                                  null,
+                'type_of_appeal_id' =>                                  (int) $typeOfAppealDataCache[$typeOfAppealKey],
                 'lpa_id' =>                                             (int) $lpaDataCache[$lpaKey],
                 'appellant_id' =>                                       (int) $appellantDataCache[$appellantKey],
                 'development_type_id' =>                                (int) $developmentTypeDataCache[$developmentTypeKey],
@@ -399,13 +407,13 @@ class ParseService
                 'type_detail_id' =>                                     (int) $typeDetailDataCache[$typeDetailKey],
                 'jurisdiction_id' =>                                    (int) $jurisdictionDataCache[$jurisdictionKey],
                 'link_status_id' =>                                     (int) $linkStatusDataCache[$linkStatusKey],
-                'call_in_date' =>                                       $this->extractTimestamp($item['Call In Date'], 'd-M-y'),
-                'decision_date' =>                                      $this->extractTimestamp($item['Decision Date'], 'd/m/y'),
-                'valid_date' =>                                         $this->extractTimestamp($item['Valid Date'], 'd/m/y'),
-                'start_date' =>                                         $this->extractTimestamp($item['Start Date'], 'd/m/y'),
-                'received_date' =>                                      $this->extractTimestamp($item['Received Date'], 'd/m/y'),
-                'date_recovered' =>                                     $this->extractTimestamp($item['Date Recovered'], 'd-M-y'),
-                'date_not_recovered_or_derecovered' =>                  $this->extractTimestamp($item['Date Not Recovered Or Derecovered'], 'd-M-y'),
+                'call_in_date' =>                                       $this->extractTimestamp($item['Call In Date'], $this->validateFormatTimestamp($item['Call In Date']), 'call_in_date'),
+                'decision_date' =>                                      $this->extractTimestamp($item['Decision Date'], $this->validateFormatTimestamp($item['Decision Date']), 'decision_date'),
+                'valid_date' =>                                         $this->extractTimestamp($item['Valid Date'], $this->validateFormatTimestamp($item['Valid Date']), 'valid_date'),
+                'start_date' =>                                         $this->extractTimestamp($item['Start Date'], $this->validateFormatTimestamp($item['Start Date']), 'start_date'),
+                'received_date' =>                                      $this->extractTimestamp($item['Received Date'], $this->validateFormatTimestamp($item['Received Date']), 'received_date'),
+                'date_recovered' =>                                     $this->extractTimestamp($item['Date Recovered'], $this->validateFormatTimestamp($item['Date Recovered']), 'date_recovered'),
+                'date_not_recovered_or_derecovered' =>                  $this->extractTimestamp($item['Date Not Recovered Or Derecovered'], $this->validateFormatTimestamp($item['Date Not Recovered Or Derecovered']), 'date_not_recovered_or_derecovered'),
             ];
 
             Appeal::updateOrCreate(
@@ -419,13 +427,19 @@ class ParseService
         }
     }
 
-    public function extractTimestamp($date, $format)
+    public function validateFormatTimestamp($data): string
+    {
+//        Log::error('TIMESTAMP!!!!!!!!!!!!!!!', [$data, strlen($data)]);
+        return strpos($data, '/') ? 'd/m/y' : 'd-M-y';
+    }
+
+    public function extractTimestamp($date, $format, $column)
     {
         if(!$date) return null;
         try {
             return Carbon::createFromFormat($format, $date)->toDateString();
         } catch (\Exception $exception) {
-            Log::error('Wrong format date: "' . $date . '" for format "' . $format);
+            Log::error('Wrong format date: "' . $date . '" for format "' . $format . ' in column ' . $column);
             return null;
         }
     }

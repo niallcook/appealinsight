@@ -34,8 +34,8 @@ $(document).ready(function (e) {
                 }, 1200);
             },
             error: function (data) {
+                console.log(data)
                 const errors = data.responseJSON.errors.csv_file;
-                console.log(errors)
 
                 errors.forEach(function (element) {
                     $('.responseInfo').append('<div class="alert alert-danger" role="alert">\n' +

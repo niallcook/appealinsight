@@ -16,9 +16,8 @@ class AgentController extends Controller
      */
     public function index(Request $request)
     {
-        //        Cache::put('processing', false);
+        //Cache::put('processing', false);
         $processing = Cache::get('processing') ?? false;
-
         return view('agent', ['processing_parse' => $processing]);
     }
 

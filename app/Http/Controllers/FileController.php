@@ -19,8 +19,7 @@ class FileController extends Controller
         Storage::disk('local')->put($file, 'File content goes here..');
         $file = Storage::disk('local')->path('files/' . $fileName);
 
-
-//        ProcessingParseCsvJob::dispatch($file);
+        ProcessingParseCsvJob::dispatch($file);
         Cache::put('processing', true);
 
         return response()->json([
