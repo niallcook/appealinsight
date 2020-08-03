@@ -1,19 +1,14 @@
-@extends('layouts.app')
 
-@section('stylesheets')
-    <link href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet">
-@endsection
 
-@section('header-scripts')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.js"></script>
-    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
-@endsection
+{{--@section('stylesheets')--}}
+{{--    <link href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet">--}}
+{{--    <link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet">--}}
+{{--@endsection--}}
 
 @section('table')
-    <div class="container">
+{{--    <div class="container">--}}
+        <div class="chart-column-with-rotated-labels"></div>
+
         <h1>Table Planning Agent</h1>
         <table class="table table-bordered data-table">
             <thead>
@@ -27,7 +22,7 @@
             <tbody>
             </tbody>
         </table>
-    </div>
+{{--    </div>--}}
 @endsection
 
 @section('scripts')
@@ -45,6 +40,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: "/api/agents",
+
                 columns: [
                     {
                         data: 'agent_id',

@@ -19,6 +19,7 @@
     <!-- Styles -->
     @yield('stylesheets')
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
 </head>
 <body>
     <div id="app">
@@ -84,8 +85,10 @@
         </nav>
 
         <main class="py-4">
+            <div class="container-fluid">
             @yield('content')
-            @yield('table')
+{{--            @yield('most_active_planning_agents_diagram')--}}
+{{--            @yield('table')--}}
 
             <div class="modal fade" id="uploadFile" aria-hidden="true">
                 <div class="modal-dialog">
@@ -108,6 +111,7 @@
                         </div>
                     </div>
                 </div>
+            </div>
             </div>
         </main>
     </div>

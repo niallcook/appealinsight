@@ -1,0 +1,10 @@
+ul.planning_agent_filter {
+    margin: 0;
+    padding: 4px;
+    border: 1px solid #000;
+}
+ul.planning_agent_filter li {
+    display: inline;
+    margin-right: 5px;
+    padding: 3px;
+}

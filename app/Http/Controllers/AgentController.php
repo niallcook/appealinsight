@@ -18,7 +18,7 @@ class AgentController extends Controller
     {
         //Cache::put('processing', false);
         $processing = Cache::get('processing') ?? false;
-        return view('agent', ['processing_parse' => $processing]);
+        return view('agents.index', ['processing_parse' => $processing]);
     }
 
     /**
@@ -46,11 +46,11 @@ class AgentController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show($id)
     {
-        //
+        return view('agents.show');
     }
 
     /**
