@@ -2,11 +2,11 @@
 
 @section('content')
     @include('filters.planning_agent_filter', [
-    'lpa' => true,
-    'appeal_types' => true,
-    'procedures' => true,
-    'development_types' => true,
-    'year' => true
+        'lpa' => true,
+        'appeal_type' => true,
+        'procedure' => true,
+        'development_type' => true,
+        'year' => true
     ])
 
     <div class="row justify-content-md-center mt-5">
@@ -41,6 +41,7 @@
 @endsection
 
 @section('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
@@ -52,16 +53,28 @@
     <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
 
     <script type="text/javascript">
-        $(function () {
 
+        var serializeToUrl = function(obj) {
+            var str = [];
+            for (var p in obj)
+                if (obj.hasOwnProperty(p)) {
+                    str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                }
+            return str.join("&");
+        }
+
+        $(function () {
+            $('.select2-filter').select2();
 
             let processing_parse = JSON.parse("{{ json_encode($processing_parse) }}");
             $('.btn-upload-file').prop('disabled', processing_parse);
 
-            $('.data-table').DataTable({
+            var filters = {};
+            var dataTable = $('.data-table').DataTable({
                 processing: true,
-                serverSide: true,
-                ajax: "/api/agents",
+                // serverSide: true,
+                // ajax: "/api/agents?" + serializeToUrl(filters),
+                data: [],
 
                 columns: [
                     {
@@ -89,6 +102,40 @@
                     // {data: 'action', name: 'action', orderable: false, searchable: false},
                 ]
             });
+
+            var getAgentsData = function() {
+                $.get('/api/agents', filters)
+                    .done(function(data) {
+                        dataTable.clear();
+                        dataTable.rows.add(data.data);
+                        dataTable.draw();
+                    });
+            }
+
+            $('.apply-filters').on('click', function() {
+                filters = {};
+                var lpa = $('.lpa-filter').val();
+                if (parseInt(lpa, 10) !== -1) {
+                    filters.lpa = lpa;
+                }
+
+                var type = $('.appeal-filter').val();
+                if (parseInt(type, 10)  !== -1) {
+                    filters.appeal_type = type;
+                }
+
+                var procedure = $('.procedure-filter').val();
+                if (parseInt(procedure, 10)  !== -1) {
+                    filters.procedure = procedure;
+                }
+
+                var development = $('.development-filter').val();
+                if (parseInt(development, 10)  !== -1) {
+                    filters.development_type = development;
+                }
+                getAgentsData();
+            });
+            getAgentsData();
 
             Highcharts.chart('most_active_planning_agents_diagrams-container', {
                 chart: {
