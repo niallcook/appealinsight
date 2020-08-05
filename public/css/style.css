@@ -1,10 +1,24 @@
 ul.planning_agent_filter {
     margin: 0;
-    padding: 4px;
+    padding: 10px 10px;
     border: 1px solid #000;
+    border-radius: 5px;
+    /*padding-left: 10px;*/
 }
 ul.planning_agent_filter li {
     display: inline;
     margin-right: 5px;
     padding: 3px;
+}
+
+.container-planning-agents {
+
+}
+
+.custom-style-column-labels {
+    margin-top: 30px;
+}
+
+.custom-style-table:last-child  {
+
 }

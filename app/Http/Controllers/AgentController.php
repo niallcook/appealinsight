@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DevelopmentType;
+use App\Models\Lpa;
+use App\Models\Procedure;
+use App\Models\TypeOfAppeal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -18,7 +22,21 @@ class AgentController extends Controller
     {
         //Cache::put('processing', false);
         $processing = Cache::get('processing') ?? false;
-        return view('agents.index', ['processing_parse' => $processing]);
+        $lpas = Lpa::all();
+        $types = TypeOfAppeal::all();
+        $procedures = Procedure::all();
+        $development_types = DevelopmentType::all();
+
+        return view('agents.index', [
+            'processing_parse' => $processing,
+            'lpas' => $lpas,
+            'types' => $types,
+            'procedures' => $procedures,
+            'development_types' => $development_types,
+            // TODO get min and max year from appellants table
+            'year_start' => 2015,
+            'year_end' => 2020
+        ]);
     }
 
     /**
