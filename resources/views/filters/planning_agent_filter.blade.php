@@ -1,6 +1,6 @@
 
 <div class="row">
-    <div class="col-md-8 offset-md-1">
+    <div class="col-md-11">
         <ul class="planning_agent_filter">
             @if($lpa)
                 <li>
@@ -74,8 +74,8 @@
             @endif
         </ul>
 </div>
-<div class="col-md-2">
-<button class="apply-filters">Apply</button>
+<div class="col-md-1">
+    <button class="apply-filters">Apply</button>
 </div>
 </div>
 

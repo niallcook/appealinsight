@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+    <div class="container-planning-agents">
     @include('filters.planning_agent_filter', [
         'lpa' => true,
         'appeal_type' => true,
@@ -9,18 +10,18 @@
         'year' => true
     ])
 
-    <div class="row justify-content-md-center mt-5">
-        <div class="col-md-10">
+    <div class="row custom-style-column-labels">
+        <div class="col-md-12">
             <figure class="highcharts-figure">
                 <div id="most_active_planning_agents_diagrams-container"></div>
             </figure>
         </div>
 
-        <div class="col-md-10">
-            <div class="chart-column-with-rotated-labels"></div>
+        <div class="col-md-12">
+            <div class=""></div>
 
             <h1>Table Planning Agent</h1>
-            <table class="table table-bordered data-table">
+            <table id="data-table" class="table table-striped table-bordered data-table custom-style-table">
                 <thead>
                 <tr>
                     <th></th>
@@ -32,12 +33,9 @@
                 <tbody>
                 </tbody>
             </table>
-{{--            @component('most_active_planning_agents_diagram.agent', ['processing_parse' => $processing_parse])--}}
-{{--            @endcomponent--}}
         </div>
     </div>
-{{--    @component('diagrams.most_active_planning_agents')--}}
-{{--    @endcomponent--}}
+    </div>
 @endsection
 
 @section('scripts')
@@ -47,35 +45,23 @@
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.js"></script>
-    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap.min.js"></script>
 
     <script type="text/javascript">
-
-        var serializeToUrl = function(obj) {
-            var str = [];
-            for (var p in obj)
-                if (obj.hasOwnProperty(p)) {
-                    str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-                }
-            return str.join("&");
-        }
-
         $(function () {
-            $('.select2-filter').select2();
+            $('.select2-filter').select2({ width: '200px' });
 
             let processing_parse = JSON.parse("{{ json_encode($processing_parse) }}");
             $('.btn-upload-file').prop('disabled', processing_parse);
 
             var filters = {};
-            var dataTable = $('.data-table').DataTable({
+            var dataTableCustom = $('.data-table').DataTable({
                 processing: true,
-                // serverSide: true,
-                // ajax: "/api/agents?" + serializeToUrl(filters),
-                data: [],
-
                 columns: [
                     {
                         data: 'agent_id',
@@ -106,9 +92,18 @@
             var getAgentsData = function() {
                 $.get('/api/agents', filters)
                     .done(function(data) {
-                        dataTable.clear();
-                        dataTable.rows.add(data.data);
-                        dataTable.draw();
+                        dataTableCustom.clear();
+                        dataTableCustom.rows.add(data.data);
+                        dataTableCustom.draw();
+                    });
+            }
+
+            const getTopTwentyAgentsData = () => {
+                $.get('/api/agents/top-twenty', filters)
+                    .done(function(data) {
+                        if(data && data.data) {
+                            columnLabelsChart.series[0].setData(data.data);
+                        }
                     });
             }
 
@@ -134,10 +129,13 @@
                     filters.development_type = development;
                 }
                 getAgentsData();
+                getTopTwentyAgentsData();
             });
+            getTopTwentyAgentsData();
             getAgentsData();
 
-            Highcharts.chart('most_active_planning_agents_diagrams-container', {
+
+            var columnLabelsChart = Highcharts.chart('most_active_planning_agents_diagrams-container', {
                 chart: {
                     type: 'column'
                 },
@@ -171,32 +169,11 @@
                 },
                 series: [{
                     name: 'Population',
-                    data: [
-                        ['Shanghai', 24.2],
-                        ['Beijing', 20.8],
-                        ['Karachi', 14.9],
-                        ['Shenzhen', 13.7],
-                        ['Guangzhou', 13.1],
-                        ['Istanbul', 12.7],
-                        ['Mumbai', 12.4],
-                        ['Moscow', 12.2],
-                        ['São Paulo', 12.0],
-                        ['Delhi', 11.7],
-                        ['Kinshasa', 11.5],
-                        ['Tianjin', 11.2],
-                        ['Lahore', 11.1],
-                        ['Jakarta', 10.6],
-                        ['Dongguan', 10.6],
-                        ['Lagos', 10.6],
-                        ['Bengaluru', 10.3],
-                        ['Seoul', 9.8],
-                        ['Foshan', 9.3],
-                        ['Tokyo', 9.3]
-                    ],
+                    // data: [],
                     dataLabels: {
                         enabled: true,
                         rotation: -90,
-                        color: '#FFFFFF',
+                        color: '#e2e5e8',
                         align: 'right',
                         format: '{point.y:.1f}', // one decimal
                         y: 10, // 10 pixels down from the top

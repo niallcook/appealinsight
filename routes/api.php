@@ -19,3 +19,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::get('agents', 'Api\ApiAgentController@getAgents');
+Route::get('agents/top-twenty', 'Api\ApiAgentController@getTopTwentyAgents');

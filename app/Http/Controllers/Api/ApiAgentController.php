@@ -79,6 +79,13 @@ class ApiAgentController extends Controller
             ORDER BY success DESC
             LIMIT 0, 20');
 
-        return "";
+        $data = collect($data)->map(function ($item, $key) {
+            return [
+                $item->name,
+                (float) $item->success
+            ];
+        });
+
+        return response()->json(['data' => $data]);
     }
 }
