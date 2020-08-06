@@ -10,7 +10,7 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}"></script>
+{{--    <script src="{{ asset('js/app.js') }}"></script>--}}
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -20,12 +20,13 @@
     @yield('stylesheets')
 
     <link rel="stylesheet" href="{{ asset('css/bower_components/bootstrap/dist/css/bootstrap.min.css') }}">
+{{--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">--}}
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{ asset('css/bower_components/font-awesome/css/font-awesome.min.css') }}">
     <!-- Ionicons -->
     <link rel="stylesheet" href="{{ asset('css/bower_components/Ionicons/css/ionicons.min.css') }}">
     <!-- DataTables -->
-    <link rel="stylesheet" href="{{ asset('css/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css') }}">
+{{--    <link rel="stylesheet" href="{{ asset('css/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css') }}">--}}
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('/css/AdminLTE.min.css') }}">
     <!-- AdminLTE Skins. Choose a skin from the css/skins
@@ -36,6 +37,24 @@
     <link href="{{ asset('css/skins/skin-blue.css') }}" rel="stylesheet">
     {{--    <link href="{{ asset('css/app.css') }}" rel="stylesheet">--}}
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+
+{{--    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>--}}
+{{--    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>--}}
+    <style>
+        .example-modal .modal {
+            position: relative;
+            top: auto;
+            bottom: auto;
+            right: auto;
+            left: auto;
+            display: block;
+            z-index: 1;
+        }
+
+        .example-modal .modal {
+            background: transparent !important;
+        }
+    </style>
 </head>
 <body class="hold-transition skin-blue layout-top-nav">
 <div class="wrapper">
@@ -90,8 +109,11 @@
                                 <li class="user-footer">
                                     <div class="pull-left">
                                         @if (Auth::user()->role->id === 2)
-                                            <button type="submit" class="btn btn-primary btn-upload-file"
-                                                    data-toggle="modal" data-target="#uploadFile">
+{{--                                            <button type="submit" class="btn btn-primary btn-upload-file"--}}
+{{--                                                    data-toggle="modal" data-target="#uploadFile">--}}
+{{--                                                Upload file--}}
+{{--                                            </button>--}}
+                                            <button type="submit" class="btn btn-primary btn-upload-file" data-toggle="modal" data-target="#uploadFile">
                                                 Upload file
                                             </button>
                                         @endif
@@ -150,6 +172,89 @@
         </div>
         <!-- /.container -->
     </footer>
+
+
+{{--    <div class="modal fade" id="uploadFile" aria-hidden="true">--}}
+{{--        <div class="modal-dialog">--}}
+{{--            <div class="modal-content">--}}
+{{--                <div class="modal-header justify-content-center">--}}
+{{--                    <h4 class="modal-title" id="modelHeading"></h4>--}}
+{{--                    <div class="responseInfo" role="alert"></div>--}}
+{{--                </div>--}}
+{{--                <div class="modal-body">--}}
+{{--                    <form id="fileForm" name="fileForm" class="form-horizontal">--}}
+{{--                        <div class="form-group form-container">--}}
+{{--                            <label for="csv_file" class="col-md-4 control-label">Import CSV</label>--}}
+{{--                            <input type="file" id="csv_file" name="csv_file">--}}
+{{--                        </div>--}}
+{{--                        <div class="col-sm-offset-2 col-sm-10">--}}
+{{--                            <button type="submit" class="btn btn-primary" id="send" value="send">Send--}}
+{{--                            </button>--}}
+{{--                        </div>--}}
+{{--                    </form>--}}
+{{--                </div>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+{{--    </div>  --}}
+
+
+    <div class="modal fade" id="uploadFile">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="fileForm" name="fileForm" class="form-inline">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Modal</h4>
+                        <div class="responseInfo" role="alert"></div>
+                    </div>
+                    <div class="modal-body">
+                            <div class="form-group mb-12">
+                                <label for="csv_file" class="sr-only">Import CSV</label>
+                                <input type="file" id="csv_file" name="csv_file">
+                            </div>
+    {{--                        <div class="form-group">--}}
+    {{--                            <label for="csv_file" class="col-md-4 control-label">Import CSV</label>--}}
+    {{--                            <input type="file" id="csv_file" name="csv_file">--}}
+    {{--                        </div>--}}
+    {{--                        <div class="col-sm-offset-2 col-sm-10">--}}
+
+    {{--                        </div>--}}
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="send" value="send">Send
+                        </button>
+    {{--                    <button type="button" class="btn btn-primary">Save changes</button>--}}
+                    </div>
+                </form>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+{{--    <div id="myModal" class="modal fade" role="dialog">--}}
+{{--        <div class="modal-dialog">--}}
+
+{{--            <!-- Modal content-->--}}
+{{--            <div class="modal-content">--}}
+{{--                <div class="modal-header">--}}
+{{--                    <button type="button" class="close" data-dismiss="modal">&times;</button>--}}
+{{--                    <h4 class="modal-title">Modal Header</h4>--}}
+{{--                </div>--}}
+{{--                <div class="modal-body">--}}
+{{--                    <p>Some text in the modal.</p>--}}
+{{--                </div>--}}
+{{--                <div class="modal-footer">--}}
+{{--                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>--}}
+{{--                </div>--}}
+{{--            </div>--}}
+
+{{--        </div>--}}
+{{--    </div>--}}
+
 </div>
 @yield('scripts')
 <script>
@@ -179,7 +284,7 @@
                         $('#fileForm').trigger("reset");
                         $('.responseInfo').empty();
                         $('#uploadFile').modal('hide');
-                    }, 1200);
+                    }, 1500);
                 },
                 error: function (data) {
                     console.log(data)

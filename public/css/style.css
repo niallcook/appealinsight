@@ -3,13 +3,16 @@ ul.planning_agent_filter {
     padding: 10px 10px;
     border: 1px solid #000;
     border-radius: 5px;
+    list-style: none;
     /*padding-left: 10px;*/
 }
+
 ul.planning_agent_filter li {
-    display: inline;
+    /*display: inline;*/
     margin-right: 5px;
-    padding: 3px;
+    /*padding: 3px;*/
 }
+
 
 .container-planning-agents {
 
