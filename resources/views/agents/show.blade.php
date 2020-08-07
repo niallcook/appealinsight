@@ -37,12 +37,6 @@
 @endsection
 
 @section('scripts')
-{{--    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>--}}
-{{--    <script src="https://code.highcharts.com/highcharts.js"></script>--}}
-{{--    <script src="https://code.highcharts.com/modules/exporting.js"></script>--}}
-{{--    <script src="https://code.highcharts.com/modules/export-data.js"></script>--}}
-{{--    <script src="https://code.highcharts.com/modules/accessibility.js"></script>--}}
-
 <script src="{{ asset('css/bower_components/jquery/dist/jquery.min.js')}}"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 {{--<script src="{{ asset('css/bower_components/chart.js/Chart.js')}}"></script>--}}
@@ -98,9 +92,7 @@
                     {
                         label: "Population (millions)",
                         backgroundColor: [],
-                        // backgroundColor: [],
                         data: []
-                        // data: []
                     }
                 ]
             },

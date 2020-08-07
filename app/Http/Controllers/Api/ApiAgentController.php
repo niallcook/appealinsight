@@ -150,7 +150,7 @@ class ApiAgentController extends Controller
                     ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
                     AND d.name IN (\'Notice Varied and Upheld\', \'Notice Upheld\', \'Dismissed\')
             ) as fail
-            FROM niall.appeals as ap
+            FROM appeals as ap
             join agents as ag ON ap.agent_id = ag.id
             join inspectors as insp on ap.inspector_id = insp.id
             where ap.agent_id = ' . $agentId . '
@@ -210,8 +210,8 @@ class ApiAgentController extends Controller
 
         if ($agentId = $request->get('agent_id')) {
             $data = DB::select('select count(*) as total, dt.name as name
-                from niall.appeals as ap
-                join niall.development_types as dt on ap.development_type_id = dt.id
+                from appeals as ap
+                join development_types as dt on ap.development_type_id = dt.id
                 where ap.agent_id = ' . $agentId . '
                 ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
                 group by ap.development_type_id');
