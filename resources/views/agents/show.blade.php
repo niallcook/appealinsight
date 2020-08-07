@@ -9,15 +9,28 @@
         'year' => true
        ])
 
-    <div class="row justify-content-md-center">
+    <div class="row">
         <div class="col-md-6">
-            <figure class="highcharts-figure">
-                <div id="development-type-chart-container"></div>
-            </figure>
-            <div class="col-md-6">
-                <figure class="highcharts-figure">
-                    <div id="basic-column-container"></div>
-                </figure>
+            <div class="chart" style="border: 1px solid black">
+                <canvas id="vertical-bar-decision-date-chart" width="800" height="450"></canvas>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="chart" style="border: 1px solid black">
+                <canvas id="doughnut-development-type-chart" width="800" height="450"></canvas>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="chart" style="border: 1px solid black">
+                <canvas id="horizontal-bar-inspector-chart" width="800" height="450"></canvas>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="chart" style="border: 1px solid black">
+                <canvas id="horizontal-bar-lpa-chart" width="800" height="450"></canvas>
             </div>
         </div>
     </div>
@@ -25,145 +38,271 @@
 
 @section('scripts')
 {{--    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>--}}
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
-    <script src="https://code.highcharts.com/modules/export-data.js"></script>
-    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+{{--    <script src="https://code.highcharts.com/highcharts.js"></script>--}}
+{{--    <script src="https://code.highcharts.com/modules/exporting.js"></script>--}}
+{{--    <script src="https://code.highcharts.com/modules/export-data.js"></script>--}}
+{{--    <script src="https://code.highcharts.com/modules/accessibility.js"></script>--}}
 
-{{--<script src="https://code.highcharts.com/highcharts.js"></script>--}}
-{{--<script src="https://code.highcharts.com/modules/exporting.js"></script>--}}
-{{--<script src="https://code.highcharts.com/modules/export-data.js"></script>--}}
-{{--<script src="https://code.highcharts.com/modules/accessibility.js"></script>--}}
+<script src="{{ asset('css/bower_components/jquery/dist/jquery.min.js')}}"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+{{--<script src="{{ asset('css/bower_components/chart.js/Chart.js')}}"></script>--}}
+<script src="{{ asset('css/bower_components/fastclick/lib/fastclick.js')}}"></script>
+<script src="{{ asset('js/dist/js/adminlte.min.js')}}"></script>
+<script src="{{ asset('js/dist/js/demo.js')}}"></script>
 
-    <script type="text/javascript">
-        $(function () {
-            Highcharts.chart('basic-column-container', {
-                chart: {
-                    type: 'column'
-                },
-                title: {
-                    text: 'Monthly Average Rainfall'
-                },
-                subtitle: {
-                    text: 'Source: WorldClimate.com'
-                },
-                xAxis: {
-                    categories: [
-                        'Jan',
-                        'Feb',
-                        'Mar',
-                        'Apr',
-                        'May',
-                        'Jun',
-                        'Jul',
-                        'Aug',
-                        'Sep',
-                        'Oct',
-                        'Nov',
-                        'Dec'
-                    ],
-                    crosshair: true
-                },
-                yAxis: {
-                    min: 0,
-                    title: {
-                        text: 'Rainfall (mm)'
-                    }
-                },
-                tooltip: {
-                    headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-                    pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                        '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
-                    footerFormat: '</table>',
-                    shared: true,
-                    useHTML: true
-                },
-                plotOptions: {
-                    column: {
-                        pointPadding: 0.2,
-                        borderWidth: 0
-                    }
-                },
-                series: [{
-                    name: 'Tokyo',
-                    data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
+<script src="{{ asset('css/bower_components/Flot/jquery.flot.js')}}"></script>
+<script src="{{ asset('css/bower_components/Flot/jquery.flot.resize.js')}}"></script>
+<script src="{{ asset('css/bower_components/Flot/jquery.flot.pie.js')}}"></script>
+<script src="{{ asset('css/bower_components/Flot/jquery.flot.categories.js')}}"></script>
 
-                }, {
-                    name: 'New York',
-                    data: [83.6, 78.8, 98.5, 93.4, 106.0, 84.5, 105.0, 104.3, 91.2, 83.5, 106.6, 92.3]
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
 
-                }, {
-                    name: 'London',
-                    data: [48.9, 38.8, 39.3, 41.4, 47.0, 48.3, 59.0, 59.6, 52.4, 65.2, 59.3, 51.2]
+<script type="text/javascript">
+    $(function () {
 
-                }, {
-                    name: 'Berlin',
-                    data: [42.4, 33.2, 34.5, 39.7, 52.6, 75.5, 57.4, 60.4, 47.6, 39.1, 46.8, 51.1]
+        var filters = {};
+        var agent_id = {!! json_encode( Request::segment(2) ) !!}
 
-                }]
-            });
-
-
-
-
-            // Build the chart
-            Highcharts.chart('development-type-chart', {
-                chart: {
-                    plotBackgroundColor: null,
-                    plotBorderWidth: null,
-                    plotShadow: false,
-                    type: 'pie'
-                },
-                title: {
-                    text: 'Browser market shares in January, 2018'
-                },
-                tooltip: {
-                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-                },
-                accessibility: {
-                    point: {
-                        valueSuffix: '%'
-                    }
-                },
-                plotOptions: {
-                    pie: {
-                        allowPointSelect: true,
-                        cursor: 'pointer',
-                        dataLabels: {
-                            enabled: false
-                        },
-                        showInLegend: true
-                    }
-                },
-                series: [{
-                    name: 'Brands',
-                    colorByPoint: true,
-                    data: [{
-                        name: 'Change of use',
-                        y: 3,
-                        // sliced: true,
-                        // selected: true
-                    }, {
-                        name: 'Minor Dwellings',
-                        y: 5
-                    }, {
-                        name: 'Householder developments',
-                        y: 5
-                    },
-                    // {
-                    //     name: 'Edge',
-                    //     y: 4.67
-                    // }, {
-                    //     name: 'Safari',
-                    //     y: 4.18
-                    // }, {
-                    //     name: 'Other',
-                    //     y: 7.05
-                    // }
+        var verticalBarByDecisionDate = new Chart(document.getElementById("vertical-bar-decision-date-chart"), {
+                type: 'bar',
+                data: {
+                    labels: ["1900", "1950", "1999", "2050"],
+                    datasets: [
+                        {
+                            label: "Successful",
+                            backgroundColor: "#3e95cd",
+                            data: []
+                        }, {
+                            label: "Failed",
+                            backgroundColor: "#8e5ea2",
+                            data: []
+                        }
                     ]
-                }]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Appeals by Decision Date'
+                    }
+                }
             });
+
+        // verticalBarByDecisionDate;
+
+
+        var doughnutChartByDevelopmentType = new Chart(document.getElementById("doughnut-development-type-chart"), {
+            type: 'doughnut',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: "Population (millions)",
+                        backgroundColor: [],
+                        // backgroundColor: [],
+                        data: []
+                        // data: []
+                    }
+                ]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Appeals by Development Type'
+                }
+            }
         });
 
-    </script>
+        var horizontalBarByInspector = new Chart(document.getElementById("horizontal-bar-inspector-chart"), {
+            type: 'horizontalBar',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: "Successful",
+                        backgroundColor: "#3ecd6b",
+                        data: []
+                    }, {
+                        label: "Failed",
+                        backgroundColor: "#fb012e",
+                        data: []
+                    }
+                ]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Appeals by Inspector'
+                }
+            }
+        });
+
+        var horizontalBarByLPA = new Chart(document.getElementById("horizontal-bar-lpa-chart"), {
+            type: 'horizontalBar',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: "Successful",
+                        backgroundColor: "#008000",
+                        data: []
+                    }, {
+                        label: "Failed",
+                        backgroundColor: "#d81313",
+                        data: []
+                    }
+                ]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Appeals by LPA'
+                }
+            }
+        });
+
+        var getRandomColor = () => {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        var getAppealsByDevelopmentType = () => {
+
+            var year_start = $('.year-start').val();
+            if (year_start) {
+                filters.year_start = year_start;
+            }
+
+            var year_end = $('.year-end').val();
+            if (year_end) {
+                filters.year_end = year_end;
+            }
+
+            if(agent_id) {
+                filters.agent_id = parseInt(agent_id);
+
+                $.get('/api/agents/appeals-by-development-type', filters)
+                    .done(function (data) {
+                        if (data && data.data) {
+                            let labels = [];
+                            var background_colors = [];
+                            let totals = [];
+
+                            data.data.forEach(el => {
+                                labels.push(el.name);
+                                totals.push(el.total);
+                            });
+
+                            for (let i = 1; i <= totals.length; i++) {
+                                let color = getRandomColor();
+                                background_colors.push(color);
+                            }
+
+                            doughnutChartByDevelopmentType.labels = labels;
+                            doughnutChartByDevelopmentType.data.datasets[0].backgroundColor = background_colors;
+                            doughnutChartByDevelopmentType.data.datasets[0].data = totals;
+
+                            doughnutChartByDevelopmentType.update();
+                        }
+                    });
+            }
+        }
+
+        var getAppealsByInspectorData = function () {
+            if(agent_id) {
+                filters.agent_id = parseInt(agent_id);
+
+                $.get('/api/agents/appeals-by-inspector', filters)
+                    .done(function (data) {
+                        if (data && data.data) {
+                            let labels = [];
+                            let success = [];
+                            let failed = [];
+
+                            data.data.forEach(el => {
+                                labels.push(el.inspector_name);
+                                success.push(el.success);
+                                failed.push(el.fail);
+                            });
+
+                            addData(horizontalBarByInspector, success, failed, labels);
+                        }
+                    });
+            }
+        }
+
+        var getAppealsByLPAData = function () {
+            if(agent_id) {
+                filters.agent_id = parseInt(agent_id);
+
+                $.get('/api/agents/appeals-by-lpa', filters)
+                    .done(function (data) {
+                        if (data && data.data) {
+                            let labels = [];
+                            let success = [];
+                            let failed = [];
+
+                            data.data.forEach(el => {
+                                labels.push(el.lpa_name);
+                                success.push(el.success);
+                                failed.push(el.fail);
+                            });
+
+                            addData(horizontalBarByLPA, success, failed, labels);
+                        }
+                    });
+            }
+        }
+
+        var getAppealsByDecisionDateData = function () {
+            if(agent_id) {
+                filters.agent_id = parseInt(agent_id);
+
+                $.get('/api/agents/appeals-by-decision-date', filters)
+                    .done(function (data) {
+                        if (data && data.data) {
+                            console.log(data.data)
+                        }
+                    });
+            }
+        }
+
+        var addData = (chart, success, failed, labels) => {
+            chart.data.labels = labels;
+            chart.data.datasets[0].data = success
+            chart.data.datasets[1].data = failed
+
+            chart.update();
+        }
+
+        $('.apply-filters').on('click', function () {
+            filters = {};
+
+            var year_start = $('.year-start').val();
+            if (year_start) {
+                filters.year_start = year_start;
+            }
+
+            var year_end = $('.year-end').val();
+            if (year_end) {
+                filters.year_end = year_end;
+            }
+
+            // getAppealsByDecisionDateData();
+            getAppealsByDevelopmentType();
+            getAppealsByInspectorData();
+            getAppealsByLPAData();
+        });
+
+        // getAppealsByDecisionDateData();
+        getAppealsByDevelopmentType();
+        getAppealsByInspectorData();
+        getAppealsByLPAData();
+
+
+    });
+</script>
 @endsection
