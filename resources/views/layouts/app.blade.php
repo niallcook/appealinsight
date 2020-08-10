@@ -19,8 +19,10 @@
     <!-- Styles -->
     @yield('stylesheets')
 
-    <link rel="stylesheet" href="{{ asset('css/bower_components/bootstrap/dist/css/bootstrap.min.css') }}">
-{{--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">--}}
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.bootstrap.min.css" />
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{ asset('css/bower_components/font-awesome/css/font-awesome.min.css') }}">
     <!-- Ionicons -->
@@ -64,7 +66,8 @@
             <div class="container">
                 <div class="navbar-header">
                     <a class="navbar-brand" href="{{ url('/') }}">
-                        {{ config('app.name', 'Laravel') }}
+{{--                        {{ config('app.name', 'Laravel') }}--}}
+                        Appeal Insight
                     </a>
                 </div>
 
@@ -109,10 +112,6 @@
                                 <li class="user-footer">
                                     <div class="pull-left">
                                         @if (Auth::user()->role->id === 2)
-{{--                                            <button type="submit" class="btn btn-primary btn-upload-file"--}}
-{{--                                                    data-toggle="modal" data-target="#uploadFile">--}}
-{{--                                                Upload file--}}
-{{--                                            </button>--}}
                                             <button type="submit" class="btn btn-primary btn-upload-file" data-toggle="modal" data-target="#uploadFile">
                                                 Upload file
                                             </button>
@@ -143,16 +142,19 @@
     </header>
     <!-- Full Width Column -->
     <div class="content-wrapper">
-        <div class="container-fluid">
-            <!-- Content Header (Page header) -->
-            <section class="content-header">
-{{--                <ol class="breadcrumb">--}}
-{{--                    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>--}}
-{{--                    <li><a href="#">Layout</a></li>--}}
-{{--                    <li class="active">Top Navigation</li>--}}
-{{--                </ol>--}}
-            </section>
+        <div class="custom-style-content-header">
+            <div class="">
+                <section class="">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4>Planning Agent Analytics {{ isset($agent) ?  ' / ' . $agent->name : '' }}</h4>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
 
+        <div class="container-fluid">
             <!-- Main content -->
             <section class="content">
                 @yield('content')
@@ -162,41 +164,6 @@
         <!-- /.container -->
     </div>
     <!-- /.content-wrapper -->
-    <footer class="main-footer">
-        <div class="container">
-            <div class="pull-right hidden-xs">
-                <b>Version</b> 2.4.0
-            </div>
-            <strong>Copyright &copy; 2014-2016 <a href="https://adminlte.io">Almsaeed Studio</a>.</strong> All rights
-            reserved.
-        </div>
-        <!-- /.container -->
-    </footer>
-
-
-{{--    <div class="modal fade" id="uploadFile" aria-hidden="true">--}}
-{{--        <div class="modal-dialog">--}}
-{{--            <div class="modal-content">--}}
-{{--                <div class="modal-header justify-content-center">--}}
-{{--                    <h4 class="modal-title" id="modelHeading"></h4>--}}
-{{--                    <div class="responseInfo" role="alert"></div>--}}
-{{--                </div>--}}
-{{--                <div class="modal-body">--}}
-{{--                    <form id="fileForm" name="fileForm" class="form-horizontal">--}}
-{{--                        <div class="form-group form-container">--}}
-{{--                            <label for="csv_file" class="col-md-4 control-label">Import CSV</label>--}}
-{{--                            <input type="file" id="csv_file" name="csv_file">--}}
-{{--                        </div>--}}
-{{--                        <div class="col-sm-offset-2 col-sm-10">--}}
-{{--                            <button type="submit" class="btn btn-primary" id="send" value="send">Send--}}
-{{--                            </button>--}}
-{{--                        </div>--}}
-{{--                    </form>--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{--        </div>--}}
-{{--    </div>  --}}
-
 
     <div class="modal fade" id="uploadFile">
         <div class="modal-dialog">
@@ -213,14 +180,6 @@
                                 <label for="csv_file" class="sr-only">Import CSV</label>
                                 <input type="file" id="csv_file" name="csv_file">
                             </div>
-    {{--                        <div class="form-group">--}}
-    {{--                            <label for="csv_file" class="col-md-4 control-label">Import CSV</label>--}}
-    {{--                            <input type="file" id="csv_file" name="csv_file">--}}
-    {{--                        </div>--}}
-    {{--                        <div class="col-sm-offset-2 col-sm-10">--}}
-
-    {{--                        </div>--}}
-
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
@@ -235,25 +194,6 @@
         <!-- /.modal-dialog -->
     </div>
     <!-- /.modal -->
-{{--    <div id="myModal" class="modal fade" role="dialog">--}}
-{{--        <div class="modal-dialog">--}}
-
-{{--            <!-- Modal content-->--}}
-{{--            <div class="modal-content">--}}
-{{--                <div class="modal-header">--}}
-{{--                    <button type="button" class="close" data-dismiss="modal">&times;</button>--}}
-{{--                    <h4 class="modal-title">Modal Header</h4>--}}
-{{--                </div>--}}
-{{--                <div class="modal-body">--}}
-{{--                    <p>Some text in the modal.</p>--}}
-{{--                </div>--}}
-{{--                <div class="modal-footer">--}}
-{{--                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>--}}
-{{--                </div>--}}
-{{--            </div>--}}
-
-{{--        </div>--}}
-{{--    </div>--}}
 
 </div>
 @yield('scripts')

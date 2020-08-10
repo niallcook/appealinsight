@@ -17,7 +17,7 @@
                 <div class="box-header with-border">
                     <i class="fa fa-bar-chart-o"></i>
 
-                    <h3 class="box-title">Bar Chart</h3>
+                    <h3 class="box-title">20 Most Active Planning Agents</h3>
 
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -43,7 +43,10 @@
 
             <h1>Table Planning Agent</h1>
 {{--            <table id="data-table" class="table table-striped table-bordered data-table custom-style-table">--}}
-            <table id="data-table" class="table table-bordered table-striped data-table custom-style-table">
+{{--            <table id="data-table" class="table table-bordered table-striped table-condensed data-table custom-style-table">--}}
+{{--            <table id="data-table" class="table-responsive data-table custom-style-table">--}}
+{{--            <table id="data-table" class="table table-striped table-bordered custom-style-table">--}}
+            <table id="data-table" class="table table-striped table-bordered" style="width:100%">
                 <thead>
                 <tr>
                     <th></th>
@@ -86,8 +89,6 @@
     <script src="{{ asset('css/bower_components/Flot/jquery.flot.pie.js')}}"></script>
     <script src="{{ asset('css/bower_components/Flot/jquery.flot.categories.js')}}"></script>
 
-
-
     <script type="text/javascript">
         $(function () {
             $('.select2-filter').select2({width: '100%'});
@@ -96,7 +97,7 @@
             $('.btn-upload-file').prop('disabled', processing_parse);
 
             var filters = {};
-            var dataTableCustom = $('.data-table').DataTable({
+            var dataTableCustom = $('#data-table').DataTable({
                 processing: true,
                 order: [[2, "desc"]],
                 columns: [
@@ -229,7 +230,7 @@
 
 
                 getAgentsData();
-                // getTopTwentyAgentsData();
+                getTopTwentyAgentsData();
             });
             getTopTwentyAgentsData();
             getAgentsData();

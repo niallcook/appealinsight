@@ -164,39 +164,51 @@ class ApiAgentController extends Controller
     public function getAppealsByDecisionDateData(Request $request)
     {
         $where = [];
+        $successful = null;
+        $failed = null;
 
         if ($year_start = $request->get('year_start') && $year_end = $request->get('year_end')) {
             array_push($where, "(decision_date BETWEEN '$year_start-01-01' AND '$year_end-01-01')");
         }
 
         if ($agentId = $request->get('agent_id')) {
-            $data = DB::select('select ap.agent_id, ag.name, COUNT(*)
-                 as total,
-                    (SELECT COUNT(*)
-
-                        FROM appeals
-                        INNER JOIN decisions d ON d.id = appeals.decision_id
-                        WHERE agent_id = ' . $agentId . '
-                        ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
-                        AND d.name IN (\'Quashed on Legal Grounds\', \'Planning Permission Granted\', \'Notice Quashed\', \'Allowed with Conditions\', \'Allowed\', \'Allowed in Part\')
-                    ) as success,
-
-                    (SELECT COUNT(*)
-                    FROM appeals
-                    INNER JOIN decisions d ON d.id = appeals.decision_id
-                    WHERE agent_id = ' . $agentId . '
-                    ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
-                    AND d.name IN (\'Notice Varied and Upheld\', \'Notice Upheld\', \'Dismissed\')
-                ) as fail
+            $successful = DB::select('select COUNT(*) as success, DATE_FORMAT(ap.decision_date, \'%y\') as formatted_year
                 from appeals as ap
-                INNER JOIN agents as ag ON ap.agent_id = ag.id
-                where ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
-                ap.agent_id = ' . $agentId );
+                LEFT JOIN decisions as d ON ap.decision_id = d.id
+                where ap.agent_id = ' . $agentId . ' AND d.name IN (\'Quashed on Legal Grounds\', \'Planning Permission Granted\', \'Notice Quashed\', \'Allowed with Conditions\', \'Allowed\', \'Allowed in Part\')
+                ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
+                GROUP BY formatted_year');
+
+            $failed = DB::select('select COUNT(*) as failed, DATE_FORMAT(ap.decision_date, \'%y\') as formatted_year
+                from appeals as ap
+                LEFT JOIN decisions as d ON ap.decision_id = d.id
+                where ap.agent_id = ' . $agentId . ' AND d.name IN (\'Notice Varied and Upheld\', \'Notice Upheld\', \'Dismissed\')
+                ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
+                GROUP BY formatted_year
+                            ');
+
+            foreach ($successful as $k => $val) {
+                if ($fail = $this->findFailed($failed, $val->formatted_year)) {
+                    $successful[$k]->fail = $fail->failed;
+                } else {
+                    $successful[$k]->fail = $fail;
+                }
+
+                $val->formatted_year = '20' . $val->formatted_year;
+            }
+
         }
 
-        dd($data);
+        return response()->json([
+            'successfulAndFail' => $successful
+        ]);
+    }
 
-        return response()->json(['data' => $data]);
+    function findFailed($failed, $year) {
+        foreach($failed as $k => $val) {
+            if ($val->formatted_year === $year) return $val;
+        }
+        return 0;
     }
 
     public function getAppealsByDevelopmentType(Request $request)
@@ -259,7 +271,7 @@ class ApiAgentController extends Controller
                 join lpas as lp on ap.lpa_id = lp.id
                 where ap.agent_id = ' . $agentId . '
                 ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
-                group by lpa_name, ap.lpa_id;');
+                group by lpa_name, ap.lpa_id');
         }
 
         return response()->json(['data' => $data]);

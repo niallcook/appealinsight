@@ -1,6 +1,50 @@
 @extends('layouts.app')
 
 @section('content')
+    <div class="row agent-statistics">
+        <div class="col-md-2">
+            <span class="custom-style-agent">{{  $agent->name }}</span>
+        </div>
+        <div class="col-md-1">
+            <div class="prg-cont-wrap text-center">
+                <div class="prg-cont rad-prg" id="indicatorAppealType"></div>
+            </div>
+
+            <p class="text-center">Top Appeal Type</p>
+            <p class="text-center"><b>{{ $topTypesOfAppeals->name }}</b></p>
+        </div>
+        <div class="col-md-2">
+            <div class="prg-cont-wrap text-center">
+                <div class="prg-cont rad-prg" id="indicatorTopLPA"></div>
+            </div>
+
+            <p class="text-center">Top LPA</p>
+            <p class="text-center"><b>{{ $topLPA->name  }}</b></p>
+        </div>
+        <div class="col-md-1">
+            <div class="prg-cont-wrap text-center">
+                <div class="prg-cont rad-prg" id="indicatorDevelopmentType"></div>
+            </div>
+
+            <p class="text-center">Top Development Type</p>
+            <p class="text-center"><b>{{ $topDevelopmentType->name }}</b></p>
+        </div>
+
+        <div class="col-md-2 custom-center">
+            <div class="text-center">
+                <p class="custom-style-total-appeals-and-success-rate">{{ $totalAppealsHandledAndSuccessRate ? $totalAppealsHandledAndSuccessRate->total : 0 }}</p>
+                <p>Total appeals handled</p>
+            </div>
+        </div>
+        <div class="col-md-1 custom-center">
+            <div class="text-center">
+                <p class="custom-style-total-appeals-and-success-rate">{{ ($totalAppealsHandledAndSuccessRate ? $totalAppealsHandledAndSuccessRate->success : 0) . '%'}}</p>
+                <p>Success rate</p>
+            </div>
+        </div>
+    </div>
+
+
     @include('filters.planning_agent_filter', [
         'lpa' => false,
         'appeal_type' => false,
@@ -11,25 +55,25 @@
 
     <div class="row">
         <div class="col-md-6">
-            <div class="chart" style="border: 1px solid black">
+            <div class="chart">
                 <canvas id="vertical-bar-decision-date-chart" width="800" height="450"></canvas>
             </div>
         </div>
 
         <div class="col-md-6">
-            <div class="chart" style="border: 1px solid black">
+            <div class="chart">
                 <canvas id="doughnut-development-type-chart" width="800" height="450"></canvas>
             </div>
         </div>
 
         <div class="col-md-6">
-            <div class="chart" style="border: 1px solid black">
+            <div class="chart">
                 <canvas id="horizontal-bar-inspector-chart" width="800" height="450"></canvas>
             </div>
         </div>
 
         <div class="col-md-6">
-            <div class="chart" style="border: 1px solid black">
+            <div class="chart">
                 <canvas id="horizontal-bar-lpa-chart" width="800" height="450"></canvas>
             </div>
         </div>
@@ -48,7 +92,7 @@
 <script src="{{ asset('css/bower_components/Flot/jquery.flot.resize.js')}}"></script>
 <script src="{{ asset('css/bower_components/Flot/jquery.flot.pie.js')}}"></script>
 <script src="{{ asset('css/bower_components/Flot/jquery.flot.categories.js')}}"></script>
-
+<script src="{{ asset('js/radialIndicator.js')}}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
 
 <script type="text/javascript">
@@ -56,32 +100,74 @@
 
         var filters = {};
         var agent_id = {!! json_encode( Request::segment(2) ) !!}
+        var topLPA = {!! json_encode( $topLPA ) !!}
+        var topTypesOfAppeals  = {!! json_encode( $topTypesOfAppeals ) !!}
+        var topDevelopmentType = {!! json_encode( $topDevelopmentType ) !!}
+
+        $('#indicatorAppealType').radialIndicator({
+            barColor: '#87CEEB',
+            barWidth: 10,
+            initValue: 40,
+            roundCorner : true,
+            percentage: true
+        });
+
+        $('#indicatorTopLPA').radialIndicator({
+            barColor: '#87CEEB',
+            barWidth: 10,
+            initValue: 40,
+            roundCorner : true,
+            percentage: true
+        });
+
+        $('#indicatorDevelopmentType').radialIndicator({
+            barColor: '#87CEEB',
+            barWidth: 10,
+            initValue: 40,
+            roundCorner : true,
+            percentage: true
+        });
+
+
+        var indicatorAppealType = $('#indicatorAppealType').data('radialIndicator');
+        var indicatorTopLPA = $('#indicatorTopLPA').data('radialIndicator');
+        var indicatorDevelopmentType = $('#indicatorDevelopmentType').data('radialIndicator');
+
+        indicatorAppealType.animate(topTypesOfAppeals.cnt);
+        indicatorTopLPA.animate(topLPA.cnt);
+        indicatorDevelopmentType.animate(topDevelopmentType.cnt);
 
         var verticalBarByDecisionDate = new Chart(document.getElementById("vertical-bar-decision-date-chart"), {
-                type: 'bar',
-                data: {
-                    labels: ["1900", "1950", "1999", "2050"],
-                    datasets: [
-                        {
-                            label: "Successful",
-                            backgroundColor: "#3e95cd",
-                            data: []
-                        }, {
-                            label: "Failed",
-                            backgroundColor: "#8e5ea2",
-                            data: []
-                        }
-                    ]
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: "Successful",
+                        backgroundColor: "#3e95cd",
+                        data: [],
+                        minBarLength: 1,
+                    }, {
+                        label: "Failed",
+                        backgroundColor: "#8e5ea2",
+                        data: []
+                    },
+                ]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Population growth (millions)'
                 },
-                options: {
-                    title: {
-                        display: true,
-                        text: 'Appeals by Decision Date'
-                    }
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            min: 0,
+                        }
+                    }]
                 }
-            });
-
-        // verticalBarByDecisionDate;
+            }
+        });
 
 
         var doughnutChartByDevelopmentType = new Chart(document.getElementById("doughnut-development-type-chart"), {
@@ -124,6 +210,14 @@
                 title: {
                     display: true,
                     text: 'Appeals by Inspector'
+                },
+                scales: {
+                    xAxes: [{
+                        ticks: {
+                            min: 0,
+                            stepSize: 1
+                        }
+                    }]
                 }
             }
         });
@@ -148,6 +242,14 @@
                 title: {
                     display: true,
                     text: 'Appeals by LPA'
+                },
+                scales: {
+                    xAxes: [{
+                        ticks: {
+                            min: 0,
+                            stepSize: 1
+                        }
+                    }]
                 }
             }
         });
@@ -159,6 +261,29 @@
                 color += letters[Math.floor(Math.random() * 16)];
             }
             return color;
+        }
+
+        var getAppealsByDecisionDateData = function () {
+            if(agent_id) {
+                filters.agent_id = parseInt(agent_id);
+
+                $.get('/api/agents/appeals-by-decision-date', filters)
+                    .done(function (data) {
+                        if (data) {
+                            let labels = [];
+                            let success = [];
+                            let failed = [];
+
+                            data.successfulAndFail.forEach(el => {
+                                labels.push(el.formatted_year);
+                                success.push(el.success);
+                                failed.push(el.fail);
+                            });
+
+                            addData(verticalBarByDecisionDate, success, failed, labels);
+                        }
+                    });
+            }
         }
 
         var getAppealsByDevelopmentType = () => {
@@ -193,7 +318,7 @@
                                 background_colors.push(color);
                             }
 
-                            doughnutChartByDevelopmentType.labels = labels;
+                            doughnutChartByDevelopmentType.data.labels = labels;
                             doughnutChartByDevelopmentType.data.datasets[0].backgroundColor = background_colors;
                             doughnutChartByDevelopmentType.data.datasets[0].data = totals;
 
@@ -249,18 +374,7 @@
             }
         }
 
-        var getAppealsByDecisionDateData = function () {
-            if(agent_id) {
-                filters.agent_id = parseInt(agent_id);
 
-                $.get('/api/agents/appeals-by-decision-date', filters)
-                    .done(function (data) {
-                        if (data && data.data) {
-                            console.log(data.data)
-                        }
-                    });
-            }
-        }
 
         var addData = (chart, success, failed, labels) => {
             chart.data.labels = labels;
@@ -283,13 +397,13 @@
                 filters.year_end = year_end;
             }
 
-            // getAppealsByDecisionDateData();
+            getAppealsByDecisionDateData();
             getAppealsByDevelopmentType();
             getAppealsByInspectorData();
             getAppealsByLPAData();
         });
 
-        // getAppealsByDecisionDateData();
+        getAppealsByDecisionDateData();
         getAppealsByDevelopmentType();
         getAppealsByInspectorData();
         getAppealsByLPAData();
