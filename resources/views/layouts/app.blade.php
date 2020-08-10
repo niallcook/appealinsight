@@ -142,6 +142,7 @@
     </header>
     <!-- Full Width Column -->
     <div class="content-wrapper">
+        @auth
         <div class="custom-style-content-header">
             <div class="">
                 <section class="">
@@ -153,6 +154,7 @@
                 </section>
             </div>
         </div>
+        @endauth
 
         <div class="container-fluid">
             <!-- Main content -->
@@ -197,6 +199,10 @@
 
 </div>
 @yield('scripts')
+
+@guest
+<script src="{{ asset('css/bower_components/jquery/dist/jquery.min.js')}}"></script>
+@endguest
 <script>
     $(document).ready(function (e) {
         $.ajaxSetup({
