@@ -155,7 +155,8 @@ class ApiAgentController extends Controller
             join inspectors as insp on ap.inspector_id = insp.id
             where ap.agent_id = ' . $agentId . '
             ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
-            group by inspector_name');
+            group by inspector_name
+            LIMIT 0, 25');
         }
 
         return response()->json(['data' => $data]);
@@ -185,7 +186,7 @@ class ApiAgentController extends Controller
                 where ap.agent_id = ' . $agentId . ' AND d.name IN (\'Notice Varied and Upheld\', \'Notice Upheld\', \'Dismissed\')
                 ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
                 GROUP BY formatted_year
-                            ');
+                LIMIT 0, 25');
 
             foreach ($successful as $k => $val) {
                 if ($fail = $this->findFailed($failed, $val->formatted_year)) {
@@ -226,7 +227,8 @@ class ApiAgentController extends Controller
                 join development_types as dt on ap.development_type_id = dt.id
                 where ap.agent_id = ' . $agentId . '
                 ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
-                group by ap.development_type_id');
+                group by ap.development_type_id
+                LIMIT 0, 25');
         }
 
         return response()->json(['data' => $data]);
@@ -271,7 +273,8 @@ class ApiAgentController extends Controller
                 join lpas as lp on ap.lpa_id = lp.id
                 where ap.agent_id = ' . $agentId . '
                 ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
-                group by lpa_name, ap.lpa_id');
+                group by lpa_name, ap.lpa_id
+                LIMIT 0, 25');
         }
 
         return response()->json(['data' => $data]);

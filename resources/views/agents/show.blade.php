@@ -157,7 +157,7 @@
             options: {
                 title: {
                     display: true,
-                    text: 'Population growth (millions)'
+                    text: 'Appeals by Decision Date'
                 },
                 scales: {
                     yAxes: [{
