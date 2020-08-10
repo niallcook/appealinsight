@@ -155,7 +155,7 @@ class ApiAgentController extends Controller
             join inspectors as insp on ap.inspector_id = insp.id
             where ap.agent_id = ' . $agentId . '
             ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
-            group by inspector_name
+            group by inspector_name ORDER BY total DESC
             LIMIT 0, 25');
         }
 
@@ -273,7 +273,7 @@ class ApiAgentController extends Controller
                 join lpas as lp on ap.lpa_id = lp.id
                 where ap.agent_id = ' . $agentId . '
                 ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
-                group by lpa_name, ap.lpa_id
+                group by lpa_name, ap.lpa_id ORDER BY total DESC
                 LIMIT 0, 25');
         }
 
