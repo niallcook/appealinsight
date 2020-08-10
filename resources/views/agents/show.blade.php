@@ -190,6 +190,169 @@
             }
         });
 
+        // var horizontalBarByInspector = new Chart(document.getElementById("horizontal-bar-inspector-chart"), {
+        //     type: 'horizontalBar',
+        //     data: {
+        //         labels: [],
+        //         datasets: [
+        //             {
+        //                 label: "Successful",
+        //                 backgroundColor: "#3ecd6b",
+        //                 data: []
+        //             }, {
+        //                 label: "Failed",
+        //                 backgroundColor: "#fb012e",
+        //                 data: []
+        //             }
+        //         ]
+        //     },
+        //     options: {
+        //         title: {
+        //             display: true,
+        //             text: 'Appeals by Inspector'
+        //         },
+        //         scales: {
+        //             xAxes: [{
+        //                 ticks: {
+        //                     min: 0,
+        //                     stepSize: 1
+        //                 }
+        //             }]
+        //         }
+        //     }
+        // });
+
+
+        var barOptionsStackedForInspector = {
+            tooltips: {
+                enabled: false
+            },
+            hover :{
+                animationDuration:0
+            },
+            scales: {
+                xAxes: [{
+                    ticks: {
+                        beginAtZero:true,
+                        fontFamily: "'Open Sans Bold', sans-serif",
+                        fontSize:11
+                    },
+                    scaleLabel:{
+                        display:false
+                    },
+                    gridLines: {
+                    },
+                    stacked: true
+                }],
+                yAxes: [{
+                    gridLines: {
+                        display:false,
+                        color: "#fff",
+                        zeroLineColor: "#fff",
+                        zeroLineWidth: 0
+                    },
+                    ticks: {
+                        fontFamily: "'Open Sans Bold', sans-serif",
+                        fontSize:11
+                    },
+                    stacked: true
+                }]
+            },
+            legend:{
+                display:false
+            },
+
+            animation: {
+                onComplete: function () {
+                    var chartInstance = this.chart;
+                    var ctx = chartInstance.ctx;
+                    ctx.textAlign = "left";
+                    ctx.font = "10px Open Sans";
+                    ctx.fillStyle = "black";
+
+                    Chart.helpers.each(this.data.datasets.forEach(function (dataset, i) {
+                        var meta = chartInstance.controller.getDatasetMeta(i);
+                        Chart.helpers.each(meta.data.forEach(function (bar, index) {
+                            data = dataset.data[index];
+                            if(i===0){
+                                console.log(data)
+                                ctx.fillText(data, 95, bar._model.y+4);
+                            } else {
+                                ctx.fillText(data, bar._model.x-25, bar._model.y+4);
+                            }
+                        }),this)
+                    }),this);
+                }
+            },
+            pointLabelFontFamily : "Quadon Extra Bold",
+            scaleFontFamily : "Quadon Extra Bold",
+        };
+
+        var barOptionsStackedForLPA = {
+            tooltips: {
+                enabled: false
+            },
+            hover :{
+                animationDuration:0
+            },
+            scales: {
+                xAxes: [{
+                    ticks: {
+                        beginAtZero:true,
+                        fontFamily: "'Open Sans Bold', sans-serif",
+                        fontSize:11
+                    },
+                    scaleLabel:{
+                        display:false
+                    },
+                    gridLines: {
+                    },
+                    stacked: true
+                }],
+                yAxes: [{
+                    gridLines: {
+                        display:false,
+                        color: "#fff",
+                        zeroLineColor: "#fff",
+                        zeroLineWidth: 0
+                    },
+                    ticks: {
+                        fontFamily: "'Open Sans Bold', sans-serif",
+                        fontSize:11
+                    },
+                    stacked: true
+                }]
+            },
+            legend:{
+                display:false
+            },
+
+            animation: {
+                onComplete: function () {
+                    var chartInstance = this.chart;
+                    var ctx = chartInstance.ctx;
+                    ctx.textAlign = "left";
+                    ctx.font = "10px Open Sans";
+                    ctx.fillStyle = "black";
+
+                    Chart.helpers.each(this.data.datasets.forEach(function (dataset, i) {
+                        var meta = chartInstance.controller.getDatasetMeta(i);
+                        Chart.helpers.each(meta.data.forEach(function (bar, index) {
+                            data = dataset.data[index];
+                            if(i===0){
+                                console.log(data)
+                                ctx.fillText(data, 265, bar._model.y+4);
+                            } else {
+                                ctx.fillText(data, bar._model.x-25, bar._model.y+4);
+                            }
+                        }),this)
+                    }),this);
+                }
+            },
+            pointLabelFontFamily : "Quadon Extra Bold",
+            scaleFontFamily : "Quadon Extra Bold",
+        };
+
         var horizontalBarByInspector = new Chart(document.getElementById("horizontal-bar-inspector-chart"), {
             type: 'horizontalBar',
             data: {
@@ -197,30 +360,51 @@
                 datasets: [
                     {
                         label: "Successful",
-                        backgroundColor: "#3ecd6b",
-                        data: []
-                    }, {
+                        data: [],
+                        backgroundColor: "#3ec367",
+                    },
+                    {
                         label: "Failed",
-                        backgroundColor: "#fb012e",
-                        data: []
-                    }
-                ]
+                        data: [],
+                        backgroundColor: "rgba(163,103,126,1)",
+                }]
             },
-            options: {
-                title: {
-                    display: true,
-                    text: 'Appeals by Inspector'
-                },
-                scales: {
-                    xAxes: [{
-                        ticks: {
-                            min: 0,
-                            stepSize: 1
-                        }
-                    }]
-                }
-            }
+
+            options: barOptionsStackedForInspector,
         });
+
+        // var horizontalBarByLPA = new Chart(document.getElementById("horizontal-bar-lpa-chart"), {
+        //     type: 'horizontalBar',
+        //     data: {
+        //         labels: [],
+        //         datasets: [
+        //             {
+        //                 label: "Successful",
+        //                 backgroundColor: "#008000",
+        //                 data: []
+        //             }, {
+        //                 label: "Failed",
+        //                 backgroundColor: "#d81313",
+        //                 data: []
+        //             }
+        //         ]
+        //     },
+        //     options: {
+        //         title: {
+        //             display: true,
+        //             text: 'Appeals by LPA'
+        //         },
+        //         scales: {
+        //             xAxes: [{
+        //                 ticks: {
+        //                     min: 0,
+        //                     stepSize: 1
+        //                 }
+        //             }]
+        //         }
+        //     }
+        // });
+
 
         var horizontalBarByLPA = new Chart(document.getElementById("horizontal-bar-lpa-chart"), {
             type: 'horizontalBar',
@@ -231,27 +415,15 @@
                         label: "Successful",
                         backgroundColor: "#008000",
                         data: []
-                    }, {
+                    },
+                    {
                         label: "Failed",
                         backgroundColor: "#d81313",
                         data: []
-                    }
-                ]
-            },
-            options: {
-                title: {
-                    display: true,
-                    text: 'Appeals by LPA'
-                },
-                scales: {
-                    xAxes: [{
-                        ticks: {
-                            min: 0,
-                            stepSize: 1
-                        }
                     }]
-                }
-            }
+            },
+
+            options: barOptionsStackedForLPA,
         });
 
         var getRandomColor = () => {
@@ -399,6 +571,7 @@
 
             getAppealsByDecisionDateData();
             getAppealsByDevelopmentType();
+
             getAppealsByInspectorData();
             getAppealsByLPAData();
         });
