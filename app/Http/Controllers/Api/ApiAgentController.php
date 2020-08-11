@@ -100,6 +100,10 @@ class ApiAgentController extends Controller
             }
         }
 
+        if ($year_start = $request->get('year_start') && $year_end = $request->get('year_end')) {
+            array_push($where, "(decision_date BETWEEN '$year_start-01-01' AND '$year_end-01-01')");
+        }
+
         $data = DB::select('select ap.agent_id, ag.name, COUNT(*) as total
             from appeals as ap
             INNER JOIN agents as ag ON ap.agent_id = ag.id
