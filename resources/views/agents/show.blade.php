@@ -133,9 +133,23 @@
         var indicatorTopLPA = $('#indicatorTopLPA').data('radialIndicator');
         var indicatorDevelopmentType = $('#indicatorDevelopmentType').data('radialIndicator');
 
-        indicatorAppealType.animate(topTypesOfAppeals.cnt);
-        indicatorTopLPA.animate(topLPA.cnt);
-        indicatorDevelopmentType.animate(topDevelopmentType.cnt);
+        if (topTypesOfAppeals && topTypesOfAppeals.cnt  !== 0) {
+            indicatorAppealType.animate((topTypesOfAppeals.cnt / topTypesOfAppeals.total) * 100);
+        } else {
+            indicatorAppealType.animate(0);
+        }
+
+        if (topLPA && topLPA.cnt  !== 0) {
+            indicatorTopLPA.animate((topLPA.cnt / topLPA.total) * 100);
+        } else {
+            indicatorTopLPA.animate(0);
+        }
+
+        if (topDevelopmentType && topDevelopmentType.cnt  !== 0) {
+            indicatorDevelopmentType.animate((topDevelopmentType.cnt / topDevelopmentType.total) * 100);
+        } else {
+            indicatorDevelopmentType.animate(0);
+        }
 
         var verticalBarByDecisionDate = new Chart(document.getElementById("vertical-bar-decision-date-chart"), {
             type: 'bar',
@@ -275,7 +289,6 @@
                         Chart.helpers.each(meta.data.forEach(function (bar, index) {
                             data = dataset.data[index];
                             if(i===0){
-                                console.log(data)
                                 ctx.fillText(data, 95, bar._model.y+4);
                             } else {
                                 ctx.fillText(data, bar._model.x-25, bar._model.y+4);
@@ -340,7 +353,6 @@
                         Chart.helpers.each(meta.data.forEach(function (bar, index) {
                             data = dataset.data[index];
                             if(i===0){
-                                console.log(data)
                                 ctx.fillText(data, 265, bar._model.y+4);
                             } else {
                                 ctx.fillText(data, bar._model.x-25, bar._model.y+4);

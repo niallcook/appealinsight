@@ -222,6 +222,7 @@ class ApiAgentController extends Controller
         $data = null;
 
         if ($year_start = $request->get('year_start') && $year_end = $request->get('year_end')) {
+            $year_end++;
             array_push($where, "(decision_date BETWEEN '$year_start-01-01' AND '$year_end-01-01')");
         }
 
