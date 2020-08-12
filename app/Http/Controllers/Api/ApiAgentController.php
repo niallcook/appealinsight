@@ -40,8 +40,8 @@ class ApiAgentController extends Controller
             }
         }
 
-        if ($year_start = $request->get('year_start') && $year_end = $request->get('year_end')) {
-            array_push($where, "(decision_date BETWEEN '$year_start-01-01' AND '$year_end-01-01')");
+        if (($year_start = $request->get('year_start') ?? null) && ($year_end = $request->get('year_end'))) {
+            array_push($where, "(decision_date BETWEEN '$year_start-01-01' AND '$year_end-12-31')");
         }
 
         $data = DB::select('select ap.agent_id, ag.name, COUNT(*) as total,
@@ -99,10 +99,8 @@ class ApiAgentController extends Controller
                 array_push($where, 'development_type_id = ' . $developmentType);
             }
         }
-
-        if ($year_start = $request->get('year_start') && $year_end = $request->get('year_end')) {
-            $year_end++;
-            array_push($where, "(decision_date BETWEEN '$year_start-01-01' AND '$year_end-01-01')");
+        if (($year_start = $request->get('year_start') ?? null) && ($year_end = $request->get('year_end'))) {
+            array_push($where, "(decision_date BETWEEN '$year_start-01-01' AND '$year_end-12-31')");
         }
 
         $data = DB::select('select ap.agent_id, ag.name, COUNT(*) as total
@@ -128,9 +126,8 @@ class ApiAgentController extends Controller
     {
         $where = [];
 
-        if ($year_start = $request->get('year_start') && $year_end = $request->get('year_end')) {
-            $year_end++;
-            array_push($where, "(decision_date BETWEEN '$year_start-01-01' AND '$year_end-01-01')");
+        if (($year_start = $request->get('year_start') ?? null) && ($year_end = $request->get('year_end'))) {
+            array_push($where, "(decision_date BETWEEN '$year_start-01-01' AND '$year_end-12-31')");
         }
 
         if ($agentId = $request->get('agent_id')) {
@@ -174,9 +171,8 @@ class ApiAgentController extends Controller
         $successful = null;
         $failed = null;
 
-        if ($year_start = $request->get('year_start') && $year_end = $request->get('year_end')) {
-            $year_end++;
-            array_push($where, "(decision_date BETWEEN '$year_start-01-01' AND '$year_end-01-01')");
+        if (($year_start = $request->get('year_start') ?? null) && ($year_end = $request->get('year_end'))) {
+            array_push($where, "(decision_date BETWEEN '$year_start-01-01' AND '$year_end-12-31')");
         }
 
         if ($agentId = $request->get('agent_id')) {
@@ -224,9 +220,8 @@ class ApiAgentController extends Controller
         $where = [];
         $data = null;
 
-        if ($year_start = $request->get('year_start') && $year_end = $request->get('year_end')) {
-            $year_end++;
-            array_push($where, "(decision_date BETWEEN '$year_start-01-01' AND '$year_end-01-01')");
+        if (($year_start = $request->get('year_start') ?? null) && ($year_end = $request->get('year_end'))) {
+            array_push($where, "(decision_date BETWEEN '$year_start-01-01' AND '$year_end-12-31')");
         }
 
         if ($agentId = $request->get('agent_id')) {
@@ -247,9 +242,8 @@ class ApiAgentController extends Controller
         $where = [];
         $data = null;
 
-        if ($year_start = $request->get('year_start') && $year_end = $request->get('year_end')) {
-            $year_end++;
-            array_push($where, "(decision_date BETWEEN '$year_start-01-01' AND '$year_end-01-01')");
+        if (($year_start = $request->get('year_start') ?? null) && ($year_end = $request->get('year_end'))) {
+            array_push($where, "(decision_date BETWEEN '$year_start-01-01' AND '$year_end-12-31')");
         }
 
         if ($agentId = $request->get('agent_id')) {
