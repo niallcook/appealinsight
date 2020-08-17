@@ -41,7 +41,7 @@
         <div class="col-md-12">
             <div class=""></div>
 
-            <h1>Table Planning Agent</h1>
+            <h1>Agents</h1>
 {{--            <table id="data-table" class="table table-striped table-bordered data-table custom-style-table">--}}
 {{--            <table id="data-table" class="table table-bordered table-striped table-condensed data-table custom-style-table">--}}
 {{--            <table id="data-table" class="table-responsive data-table custom-style-table">--}}
@@ -237,4 +237,3 @@
     });
     </script>
 @endsection
-
