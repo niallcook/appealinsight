@@ -92,7 +92,6 @@ class ParseService
         $decisionDataCache = [];
 
         foreach ($data as $item) {
-
             // LPA updating and caching
             $lpaKey = $item['LPA Name'].$item['ONS LPA Code'];
             if(!isset($lpaDataCache[$lpaKey])) {
@@ -295,11 +294,18 @@ class ParseService
                     'name' => $item['Agent']
                 ];
 
-                $agentData = Agent::updateOrCreate(
-                    $agentData,
-                    $agentData
-                );
-                $agentDataCache[$agentKey] = $agentData->id;
+                $altAgent = AgentAltName::where('alt_name', $item['Agent'])->first();
+
+                if (isset($altAgent)) {
+                    $agentData = Agent::find($altAgent->agent_id);
+                    $agentDataCache[$agentKey] = $agentData->id;
+                } else {
+                    $agentData = Agent::updateOrCreate(
+                        $agentData,
+                        $agentData
+                    );
+                    $agentDataCache[$agentKey] = $agentData->id;
+                }
             }
             // Agent - END
 
@@ -326,11 +332,18 @@ class ParseService
                     'name' => $item['Appellant']
                 ];
 
-                $appellantData = Appellant::updateOrCreate(
-                    $appellantData,
-                    $appellantData
-                );
-                $appellantDataCache[$appellantKey] = $appellantData->id;
+                $altAppellant = AppellantAltName::where('alt_name', $item['Appellant'])->first();
+
+                if (isset($altAppellant)) {
+                    $appellantData = Appellant::find($altAppellant->appellant_id);
+                    $appellantDataCache[$appellantKey] = $appellantData->id;
+                } else {
+                    $appellantData = Appellant::updateOrCreate(
+                        $appellantData,
+                        $appellantData
+                    );
+                    $appellantDataCache[$appellantKey] = $appellantData->id;
+                }
             }
             // Appellant - END
 
