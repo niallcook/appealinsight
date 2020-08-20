@@ -92,6 +92,12 @@ class ParseService
         $decisionDataCache = [];
 
         foreach ($data as $item) {
+
+//            if ($item['Agent'] !== 'Mr Jason Parker') {
+//                continue;
+//            }
+
+
             // LPA updating and caching
             $lpaKey = $item['LPA Name'].$item['ONS LPA Code'];
             if(!isset($lpaDataCache[$lpaKey])) {
@@ -288,6 +294,7 @@ class ParseService
             // Link Status - END
 
             // Agent updating and caching
+            $altAgent = null;
             $agentKey = $item['Agent'];
             if(!isset($agentDataCache[$agentKey])) {
                 $agentData = [
@@ -296,7 +303,7 @@ class ParseService
 
                 $altAgent = AgentAltName::where('alt_name', $item['Agent'])->first();
 
-                if (isset($altAgent)) {
+                if ($altAgent) {
                     $agentData = Agent::find($altAgent->agent_id);
                     $agentDataCache[$agentKey] = $agentData->id;
                 } else {
