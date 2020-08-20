@@ -314,7 +314,7 @@ class ParseService
             if(!isset($agentAltNameDataCache[$agentAltNameKey])) {
                 $agentAltNameData = [
                     'agent_id' => $agentData->id,
-                    'alt_name' => $item['Agent']
+                    'alt_name' => $agentData->name
                 ];
 
                 $agentAltNameData = AgentAltName::updateOrCreate(
