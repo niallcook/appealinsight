@@ -303,7 +303,7 @@ class ParseService
             // Agent - END
 
             // Agent Alt Name updating and caching
-            $agentAltNameData = AgentAltName::where('alt_name', $agentData->name)->first();
+            $agentAltNameData = AgentAltName::where('alt_name', $item['Agent'])->first();
             if (!$agentAltNameData) {
                 AgentAltName::create([
                     'agent_id' => $agentData->id,
