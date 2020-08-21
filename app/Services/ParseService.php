@@ -327,8 +327,8 @@ class ParseService
             // Appellant - END
 
             // Appellant Alt Name updating and caching
-            $appellantAltNameData = AppellantAltName::where('alt_name', $appellantData->name)->first();
-            if (!$agentAltNameData) {
+            $appellantAltNameData = AppellantAltName::where('alt_name', $item['Appellant'])->first();
+            if (!$appellantAltNameData) {
                 AppellantAltName::create([
                     'appellant_id' => $appellantData->id,
                     'alt_name' => $appellantData->name
@@ -351,13 +351,6 @@ class ParseService
             }
             // Decision - END
 
-
-            $startDate = $this->extractTimestamp($item['Start Date'], $this->validateFormatTimestamp($item['Start Date']), 'start_date');
-
-            if(is_null($startDate)) {
-                Log::error('Reference', [$item['Reference']]);
-                Log::error('START_DATE', [$startDate]);
-            }
 
             $appealData = [
                 'reference' =>                                          (int) $item['Reference'],
@@ -402,7 +395,7 @@ class ParseService
                 'call_in_date' =>                                       $this->extractTimestamp($item['Call In Date'], $this->validateFormatTimestamp($item['Call In Date']), 'call_in_date'),
                 'decision_date' =>                                      $this->extractTimestamp($item['Decision Date'], $this->validateFormatTimestamp($item['Decision Date']), 'decision_date'),
                 'valid_date' =>                                         $this->extractTimestamp($item['Valid Date'], $this->validateFormatTimestamp($item['Valid Date']), 'valid_date'),
-                'start_date' =>                                         $startDate,
+                'start_date' =>                                         $this->extractTimestamp($item['Start Date'], $this->validateFormatTimestamp($item['Start Date']), 'start_date'),
                 'received_date' =>                                      $this->extractTimestamp($item['Received Date'], $this->validateFormatTimestamp($item['Received Date']), 'received_date'),
                 'date_recovered' =>                                     $this->extractTimestamp($item['Date Recovered'], $this->validateFormatTimestamp($item['Date Recovered']), 'date_recovered'),
                 'date_not_recovered_or_derecovered' =>                  $this->extractTimestamp($item['Date Not Recovered Or Derecovered'], $this->validateFormatTimestamp($item['Date Not Recovered Or Derecovered']), 'date_not_recovered_or_derecovered'),
@@ -418,7 +411,6 @@ class ParseService
 
             } catch (\Exception $exception) {
                 Log::error('Wrong updateOrCreate Appeal: "', [$exception]);
-                return null;
             }
         }
     }
