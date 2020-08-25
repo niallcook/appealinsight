@@ -78,8 +78,8 @@ class AgentController extends Controller
             $agentId = $agent->id;
 
             $topTypesOfAppeals = DB::select('SELECT types_of_appeals.name, COUNT(*) as cnt
-                FROM appeals
-                INNER JOIN types_of_appeals ON appeals.type_of_appeal_id = types_of_appeals.id
+                FROM appeals as ap
+                INNER JOIN types_of_appeals ON ap.type_of_appeal_id = types_of_appeals.id
                 INNER JOIN decisions d ON d.id = ap.decision_id
                 WHERE agent_id = ' . $agentId . '
                 AND d.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
@@ -88,8 +88,8 @@ class AgentController extends Controller
                 LIMIT 0, 1');
 
             $topLPA = DB::select('SELECT lpas.name, COUNT(*) as cnt
-                FROM appeals
-                INNER JOIN lpas ON appeals.lpa_id = lpas.id
+                FROM appeals as ap
+                INNER JOIN lpas ON ap.lpa_id = lpas.id
                 INNER JOIN decisions d ON d.id = ap.decision_id
                 WHERE agent_id = ' . $agentId . '
                 AND d.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
@@ -98,8 +98,8 @@ class AgentController extends Controller
                 LIMIT 0, 1');
 
             $topDevelopmentType = DB::select('SELECT dt.name, COUNT(*) as cnt
-                FROM appeals
-                INNER JOIN development_types as dt ON appeals.development_type_id = dt.id
+                FROM appeals as ap
+                INNER JOIN development_types as dt ON ap.development_type_id = dt.id
                 INNER JOIN decisions d ON d.id = ap.decision_id
                 WHERE agent_id = ' . $agentId . '
                 AND d.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
