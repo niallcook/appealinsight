@@ -77,26 +77,32 @@ class AgentController extends Controller
 
             $agentId = $agent->id;
 
-            $topTypesOfAppeals = DB::select('SELECT types_of_appeals.name, COUNT(*) as cnt, (SELECT COUNT(*) FROM appeals WHERE agent_id = ' . $agentId .') as total
+            $topTypesOfAppeals = DB::select('SELECT types_of_appeals.name, COUNT(*) as cnt
                 FROM appeals
                 INNER JOIN types_of_appeals ON appeals.type_of_appeal_id = types_of_appeals.id
+                INNER JOIN decisions d ON d.id = ap.decision_id
                 WHERE agent_id = ' . $agentId . '
+                AND d.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
                 GROUP BY type_of_appeal_id
                 order by cnt DESC
                 LIMIT 0, 1');
 
-            $topLPA = DB::select('SELECT lpas.name, COUNT(*) as cnt, (SELECT COUNT(*) FROM appeals WHERE agent_id = ' . $agentId .') as total
+            $topLPA = DB::select('SELECT lpas.name, COUNT(*) as cnt
                 FROM appeals
                 INNER JOIN lpas ON appeals.lpa_id = lpas.id
+                INNER JOIN decisions d ON d.id = ap.decision_id
                 WHERE agent_id = ' . $agentId . '
+                AND d.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
                 GROUP BY lpa_id
                 order by cnt DESC
                 LIMIT 0, 1');
 
-            $topDevelopmentType = DB::select('SELECT dt.name, COUNT(*) as cnt, (SELECT COUNT(*) FROM appeals WHERE agent_id = ' . $agentId .') as total
+            $topDevelopmentType = DB::select('SELECT dt.name, COUNT(*) as cnt
                 FROM appeals
                 INNER JOIN development_types as dt ON appeals.development_type_id = dt.id
+                INNER JOIN decisions d ON d.id = ap.decision_id
                 WHERE agent_id = ' . $agentId . '
+                AND d.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
                 GROUP BY development_type_id
                 order by cnt DESC
                 LIMIT 0, 1');
@@ -109,11 +115,19 @@ class AgentController extends Controller
                     WHERE agent_id = ' . $agentId . '
                     AND ag.name IS NOT NULL and  ag.name != \'\'
                     AND d.name IN (\'Quashed on Legal Grounds\', \'Planning Permission Granted\', \'Notice Quashed\', \'Allowed with Conditions\', \'Allowed\', \'Allowed in Part\')
-                ) / (SELECT COUNT(*) FROM appeals WHERE agent_id = ag.id GROUP BY agent_id)) * 100, 2) as success
+                ) / (SELECT COUNT(*)
+                        FROM appeals
+                        INNER JOIN decisions d ON d.id = appeals.decision_id
+                        WHERE agent_id = ag.id
+                        AND d.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
+                        GROUP BY agent_id)
+                    ) * 100, 2) as success
                 from appeals as ap
                 INNER JOIN agents as ag ON ap.agent_id = ag.id
+                INNER JOIN decisions decision ON decision.id = ap.decision_id
                 WHERE ag.name IS NOT NULL AND  ag.name != \'\'
                 AND  ap.agent_id = ' . $agentId . '
+                AND decision.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
                 GROUP BY ap.agent_id ORDER BY total DESC');
 
             $topLPA = empty($topLPA) ?: $topLPA[0];

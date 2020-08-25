@@ -103,6 +103,7 @@
         var topLPA = {!! json_encode( $topLPA ) !!}
         var topTypesOfAppeals  = {!! json_encode( $topTypesOfAppeals ) !!}
         var topDevelopmentType = {!! json_encode( $topDevelopmentType ) !!}
+        var totalAppealsHandledAndSuccessRate = {!! json_encode( $totalAppealsHandledAndSuccessRate ) !!}
 
         $('#indicatorAppealType').radialIndicator({
             barColor: '#87CEEB',
@@ -133,22 +134,28 @@
         var indicatorTopLPA = $('#indicatorTopLPA').data('radialIndicator');
         var indicatorDevelopmentType = $('#indicatorDevelopmentType').data('radialIndicator');
 
-        if (topTypesOfAppeals && topTypesOfAppeals.cnt  !== 0) {
-            indicatorAppealType.animate((topTypesOfAppeals.cnt / topTypesOfAppeals.total) * 100);
-        } else {
-            indicatorAppealType.animate(0);
-        }
 
-        if (topLPA && topLPA.cnt  !== 0) {
-            indicatorTopLPA.animate((topLPA.cnt / topLPA.total) * 100);
-        } else {
-            indicatorTopLPA.animate(0);
-        }
 
-        if (topDevelopmentType && topDevelopmentType.cnt  !== 0) {
-            indicatorDevelopmentType.animate((topDevelopmentType.cnt / topDevelopmentType.total) * 100);
-        } else {
-            indicatorDevelopmentType.animate(0);
+        if (totalAppealsHandledAndSuccessRate && totalAppealsHandledAndSuccessRate !== 0) {
+            let total = totalAppealsHandledAndSuccessRate.total;
+
+            if (topTypesOfAppeals && topTypesOfAppeals.cnt !== 0) {
+                indicatorAppealType.animate((topTypesOfAppeals.cnt / total) * 100);
+            } else {
+                indicatorAppealType.animate(0);
+            }
+
+            if (topLPA && topLPA.cnt !== 0) {
+                indicatorTopLPA.animate((topLPA.cnt / total) * 100);
+            } else {
+                indicatorTopLPA.animate(0);
+            }
+
+            if (topDevelopmentType && topDevelopmentType.cnt !== 0) {
+                indicatorDevelopmentType.animate((topDevelopmentType.cnt / total) * 100);
+            } else {
+                indicatorDevelopmentType.animate(0);
+            }
         }
 
         var verticalBarByDecisionDate = new Chart(document.getElementById("vertical-bar-decision-date-chart"), {

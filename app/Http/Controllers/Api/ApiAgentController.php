@@ -53,10 +53,18 @@ class ApiAgentController extends Controller
                 AND ag.name IS NOT NULL and  ag.name != \'\'
                 ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
                 AND d.name IN (\'Quashed on Legal Grounds\', \'Planning Permission Granted\', \'Notice Quashed\', \'Allowed with Conditions\', \'Allowed\', \'Allowed in Part\')
-            ) / (SELECT COUNT(*) FROM appeals WHERE agent_id = ag.id GROUP BY agent_id)) * 100, 2) as success
+                ) / (SELECT COUNT(*)
+                        FROM appeals
+                        INNER JOIN decisions d ON d.id = appeals.decision_id
+                        WHERE agent_id = ag.id
+                        AND d.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
+                        GROUP BY agent_id)
+                    ) * 100, 2) as success
             from appeals as ap
             INNER JOIN agents as ag ON ap.agent_id = ag.id
+            INNER JOIN decisions decision ON decision.id = ap.decision_id
             WHERE ag.name IS NOT NULL and  ag.name != \'\'
+            AND decision.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
             ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
             GROUP BY ap.agent_id order by total DESC');
 
@@ -106,7 +114,9 @@ class ApiAgentController extends Controller
         $data = DB::select('select ap.agent_id, ag.name, COUNT(*) as total
             from appeals as ap
             INNER JOIN agents as ag ON ap.agent_id = ag.id
-            WHERE ag.name IS NOT NULL and  ag.name != \'\'
+            INNER JOIN decisions d ON d.id = ap.decision_id
+            WHERE ag.name IS NOT NULL AND  ag.name != \'\'
+            AND d.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
             ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
             GROUP BY ap.agent_id
             ORDER BY total DESC
@@ -156,7 +166,9 @@ class ApiAgentController extends Controller
             FROM appeals as ap
             join agents as ag ON ap.agent_id = ag.id
             join inspectors as insp on ap.inspector_id = insp.id
+            join decisions decision ON decision.id = ap.decision_id
             where ap.agent_id = ' . $agentId . '
+            AND decision.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
             ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
             group by inspector_name ORDER BY total DESC
             LIMIT 0, 25');
@@ -228,7 +240,9 @@ class ApiAgentController extends Controller
             $data = DB::select('select count(*) as total, dt.name as name
                 from appeals as ap
                 join development_types as dt on ap.development_type_id = dt.id
+                JOIN decisions d ON d.id = ap.decision_id
                 where ap.agent_id = ' . $agentId . '
+                AND d.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
                 ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
                 group by ap.development_type_id
                 LIMIT 0, 25');
@@ -262,7 +276,6 @@ class ApiAgentController extends Controller
                     ) as success,
 
                     (SELECT COUNT(*)
-
                         FROM appeals
                         join lpas as lp on appeals.lpa_id = lp.id
                         INNER JOIN decisions d ON d.id = appeals.decision_id
@@ -274,7 +287,9 @@ class ApiAgentController extends Controller
                 FROM appeals as ap
                 join agents as ag ON ap.agent_id = ag.id
                 join lpas as lp on ap.lpa_id = lp.id
+                INNER JOIN decisions decision ON decision.id = ap.decision_id
                 where ap.agent_id = ' . $agentId . '
+                AND decision.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
                 ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
                 group by lpa_name, ap.lpa_id ORDER BY total DESC
                 LIMIT 0, 25');
