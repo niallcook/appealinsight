@@ -62,9 +62,7 @@ class ApiAgentController extends Controller
                     ) * 100, 2) as success
             from appeals as ap
             INNER JOIN agents as ag ON ap.agent_id = ag.id
-            INNER JOIN decisions decision ON decision.id = ap.decision_id
             WHERE ag.name IS NOT NULL and  ag.name != \'\'
-            AND decision.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
             ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
             GROUP BY ap.agent_id order by total DESC');
 
@@ -114,9 +112,7 @@ class ApiAgentController extends Controller
         $data = DB::select('select ap.agent_id, ag.name, COUNT(*) as total
             from appeals as ap
             INNER JOIN agents as ag ON ap.agent_id = ag.id
-            INNER JOIN decisions d ON d.id = ap.decision_id
             WHERE ag.name IS NOT NULL AND  ag.name != \'\'
-            AND d.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
             ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
             GROUP BY ap.agent_id
             ORDER BY total DESC
