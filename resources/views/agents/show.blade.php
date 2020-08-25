@@ -392,39 +392,6 @@
             options: barOptionsStackedForInspector,
         });
 
-        // var horizontalBarByLPA = new Chart(document.getElementById("horizontal-bar-lpa-chart"), {
-        //     type: 'horizontalBar',
-        //     data: {
-        //         labels: [],
-        //         datasets: [
-        //             {
-        //                 label: "Successful",
-        //                 backgroundColor: "#008000",
-        //                 data: []
-        //             }, {
-        //                 label: "Failed",
-        //                 backgroundColor: "#d81313",
-        //                 data: []
-        //             }
-        //         ]
-        //     },
-        //     options: {
-        //         title: {
-        //             display: true,
-        //             text: 'Appeals by LPA'
-        //         },
-        //         scales: {
-        //             xAxes: [{
-        //                 ticks: {
-        //                     min: 0,
-        //                     stepSize: 1
-        //                 }
-        //             }]
-        //         }
-        //     }
-        // });
-
-
         var horizontalBarByLPA = new Chart(document.getElementById("horizontal-bar-lpa-chart"), {
             type: 'horizontalBar',
             data: {
@@ -455,9 +422,8 @@
         }
 
         var getAppealsByDecisionDateData = function () {
-            if(agent_id) {
+            if (agent_id) {
                 filters.agent_id = parseInt(agent_id);
-
                 $.get('/api/agents/appeals-by-decision-date', filters)
                     .done(function (data) {
                         if (data) {
@@ -465,20 +431,20 @@
                             let success = [];
                             let failed = [];
 
-                            data.successfulAndFail.forEach(el => {
-                                labels.push(el.formatted_year);
-                                success.push(el.success);
-                                failed.push(el.fail);
-                            });
+                            Object.keys(data).forEach(year => {
+                                labels.push(year);
+                                success.push(data[year].success);
 
+                                // console.log(data[year].failed)
+                                failed.push(data[year].failed);
+                            })
                             addData(verticalBarByDecisionDate, success, failed, labels);
                         }
                     });
             }
         }
 
-        var getAppealsByDevelopmentType = () => {
-
+        var getYears = () => {
             var year_start = $('.year-start').val();
             if (year_start) {
                 filters.year_start = year_start;
@@ -488,6 +454,10 @@
             if (year_end) {
                 filters.year_end = year_end;
             }
+        }
+
+
+        var getAppealsByDevelopmentType = () => {
 
             if(agent_id) {
                 filters.agent_id = parseInt(agent_id);
@@ -588,6 +558,7 @@
                 filters.year_end = year_end;
             }
 
+            getYears();
             getAppealsByDecisionDateData();
             getAppealsByDevelopmentType();
 
@@ -595,6 +566,7 @@
             getAppealsByLPAData();
         });
 
+        getYears();
         getAppealsByDecisionDateData();
         getAppealsByDevelopmentType();
         getAppealsByInspectorData();

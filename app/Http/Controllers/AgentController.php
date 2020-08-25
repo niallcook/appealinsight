@@ -80,9 +80,7 @@ class AgentController extends Controller
             $topTypesOfAppeals = DB::select('SELECT types_of_appeals.name, COUNT(*) as cnt
                 FROM appeals as ap
                 INNER JOIN types_of_appeals ON ap.type_of_appeal_id = types_of_appeals.id
-                INNER JOIN decisions d ON d.id = ap.decision_id
                 WHERE agent_id = ' . $agentId . '
-                AND d.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
                 GROUP BY type_of_appeal_id
                 order by cnt DESC
                 LIMIT 0, 1');
@@ -90,9 +88,7 @@ class AgentController extends Controller
             $topLPA = DB::select('SELECT lpas.name, COUNT(*) as cnt
                 FROM appeals as ap
                 INNER JOIN lpas ON ap.lpa_id = lpas.id
-                INNER JOIN decisions d ON d.id = ap.decision_id
                 WHERE agent_id = ' . $agentId . '
-                AND d.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
                 GROUP BY lpa_id
                 order by cnt DESC
                 LIMIT 0, 1');
@@ -100,9 +96,7 @@ class AgentController extends Controller
             $topDevelopmentType = DB::select('SELECT dt.name, COUNT(*) as cnt
                 FROM appeals as ap
                 INNER JOIN development_types as dt ON ap.development_type_id = dt.id
-                INNER JOIN decisions d ON d.id = ap.decision_id
                 WHERE agent_id = ' . $agentId . '
-                AND d.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
                 GROUP BY development_type_id
                 order by cnt DESC
                 LIMIT 0, 1');
@@ -124,10 +118,8 @@ class AgentController extends Controller
                     ) * 100, 2) as success
                 from appeals as ap
                 INNER JOIN agents as ag ON ap.agent_id = ag.id
-                INNER JOIN decisions decision ON decision.id = ap.decision_id
                 WHERE ag.name IS NOT NULL AND  ag.name != \'\'
                 AND  ap.agent_id = ' . $agentId . '
-                AND decision.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
                 GROUP BY ap.agent_id ORDER BY total DESC');
 
             $topLPA = empty($topLPA) ?: $topLPA[0];

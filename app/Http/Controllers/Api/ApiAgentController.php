@@ -180,22 +180,25 @@ class ApiAgentController extends Controller
     public function getAppealsByDecisionDateData(Request $request)
     {
         $where = [];
-        $successful = null;
-        $failed = null;
 
         if (($year_start = $request->get('year_start') ?? null) && ($year_end = $request->get('year_end'))) {
             array_push($where, "(decision_date BETWEEN '$year_start-01-01' AND '$year_end-12-31')");
+
+
+        }
+        $agentId = $request->get('agent_id');
+        if(!$agentId) {
+            return response()->json([]);
         }
 
-        if ($agentId = $request->get('agent_id')) {
-            $successful = DB::select('select COUNT(*) as success, DATE_FORMAT(ap.decision_date, \'%y\') as formatted_year
+        $successful = DB::select('select COUNT(*) as total, DATE_FORMAT(ap.decision_date, \'%Y\') as formatted_year
                 from appeals as ap
                 LEFT JOIN decisions as d ON ap.decision_id = d.id
                 where ap.agent_id = ' . $agentId . ' AND d.name IN (\'Quashed on Legal Grounds\', \'Planning Permission Granted\', \'Notice Quashed\', \'Allowed with Conditions\', \'Allowed\', \'Allowed in Part\')
                 ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
                 GROUP BY formatted_year');
 
-            $failed = DB::select('select COUNT(*) as failed, DATE_FORMAT(ap.decision_date, \'%y\') as formatted_year
+        $failed = DB::select('select COUNT(*) as total, DATE_FORMAT(ap.decision_date, \'%Y\') as formatted_year
                 from appeals as ap
                 LEFT JOIN decisions as d ON ap.decision_id = d.id
                 where ap.agent_id = ' . $agentId . ' AND d.name IN (\'Notice Varied and Upheld\', \'Notice Upheld\', \'Dismissed\')
@@ -203,21 +206,22 @@ class ApiAgentController extends Controller
                 GROUP BY formatted_year
                 LIMIT 0, 25');
 
-            foreach ($successful as $k => $val) {
-                if ($fail = $this->findFailed($failed, $val->formatted_year)) {
-                    $successful[$k]->fail = $fail->failed;
-                } else {
-                    $successful[$k]->fail = $fail;
-                }
 
-                $val->formatted_year = '20' . $val->formatted_year;
-            }
-
+        $years = [];
+        for ($year = intval($year_start); $year <= $year_end; $year++) {
+            $years[$year] = [
+                'success' => 0,
+                'failed' => 0
+            ];
         }
 
-        return response()->json([
-            'successfulAndFail' => $successful
-        ]);
+        foreach ($successful as $k => $val) {
+            $years[$val->formatted_year]['success'] = $val->total;
+        }
+        foreach ($failed as $k => $val) {
+            $years[$val->formatted_year]['failed'] = $val->total;
+        }
+        return response()->json($years);
     }
 
     function findFailed($failed, $year) {
