@@ -9,7 +9,7 @@
 {{--    <div class="container">--}}
         <div class="chart-column-with-rotated-labels"></div>
 
-        <h1>Table Planning Agent</h1>
+        <h1>All Planning Agents</h1>
         <table class="table table-bordered data-table">
             <thead>
             <tr>
