@@ -14,8 +14,8 @@
             <thead>
             <tr>
                 <th></th>
-                <th>Planning Agent</th>
-                <th width="100px">Appeal Count</th>
+                <th>Agent Name</th>
+                <th width="100px">Appeals</th>
                 <th width="100px">Success Rate</th>
             </tr>
             </thead>
