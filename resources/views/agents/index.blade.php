@@ -49,7 +49,7 @@
             <table id="data-table" class="table table-striped table-bordered" style="width:100%">
                 <thead>
                 <tr>
-                    <th></th>
+                    <!--<th></th>-->
                     <th>Agent Name</th>
                     <th width="150px">Appeals Handled</th>
                     <th width="100px">Success Rate</th>
@@ -101,10 +101,10 @@
                 processing: true,
                 order: [[2, "desc"]],
                 columns: [
-                    {
-                        data: 'agent_id',
-                        name: 'agent_id',
-                    },
+                    // {
+                    //    data: 'agent_id',
+                    //    name: 'agent_id',
+                    // },
                     {
                         data: 'name',
                         name: 'name',
