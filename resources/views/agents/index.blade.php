@@ -99,7 +99,7 @@
             var filters = {};
             var dataTableCustom = $('#data-table').DataTable({
                 processing: true,
-                order: [[2, "desc"]],
+                order: [[1, "desc"]],
                 columns: [
                     // {
                     //    data: 'agent_id',
