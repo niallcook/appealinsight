@@ -41,7 +41,7 @@
         <div class="col-md-12">
             <div class=""></div>
 
-            <h1>Agents</h1>
+            <h1>Planning Agents</h1>
 {{--            <table id="data-table" class="table table-striped table-bordered data-table custom-style-table">--}}
 {{--            <table id="data-table" class="table table-bordered table-striped table-condensed data-table custom-style-table">--}}
 {{--            <table id="data-table" class="table-responsive data-table custom-style-table">--}}
@@ -50,8 +50,8 @@
                 <thead>
                 <tr>
                     <th></th>
-                    <th>Planning Agent</th>
-                    <th width="100px">Appeal Count</th>
+                    <th>Agent Name</th>
+                    <th width="100px">Appeals Handled</th>
                     <th width="100px">Success Rate</th>
                 </tr>
                 </thead>
