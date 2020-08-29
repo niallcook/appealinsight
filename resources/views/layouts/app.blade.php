@@ -214,6 +214,7 @@
             e.preventDefault();
             $('.responseInfo').empty();
             let formData = new FormData(this);
+            $('#send').prop('disabled', true);
             $.ajax({
                 url: "{{ url('upload-file') }}",
                 type: "POST",
@@ -230,10 +231,12 @@
                         $('#fileForm').trigger("reset");
                         $('.responseInfo').empty();
                         $('#uploadFile').modal('hide');
+                        $('#send').prop('disabled', false);
                     }, 1500);
                 },
                 error: function (data) {
                     console.log(data)
+                    $('#send').prop('disabled', false);
                     const errors = data.responseJSON.errors.csv_file;
                     errors.forEach(function (element) {
                         $('.responseInfo').append('<div class="alert alert-danger" role="alert">\n' +

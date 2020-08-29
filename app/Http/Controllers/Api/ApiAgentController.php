@@ -53,7 +53,13 @@ class ApiAgentController extends Controller
                 AND ag.name IS NOT NULL and  ag.name != \'\'
                 ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
                 AND d.name IN (\'Quashed on Legal Grounds\', \'Planning Permission Granted\', \'Notice Quashed\', \'Allowed with Conditions\', \'Allowed\', \'Allowed in Part\')
-            ) / (SELECT COUNT(*) FROM appeals WHERE agent_id = ag.id GROUP BY agent_id)) * 100, 2) as success
+                ) / (SELECT COUNT(*)
+                        FROM appeals
+                        INNER JOIN decisions d ON d.id = appeals.decision_id
+                        WHERE agent_id = ag.id
+                        AND d.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
+                        GROUP BY agent_id)
+                    ) * 100, 2) as success
             from appeals as ap
             INNER JOIN agents as ag ON ap.agent_id = ag.id
             WHERE ag.name IS NOT NULL and  ag.name != \'\'
@@ -106,7 +112,7 @@ class ApiAgentController extends Controller
         $data = DB::select('select ap.agent_id, ag.name, COUNT(*) as total
             from appeals as ap
             INNER JOIN agents as ag ON ap.agent_id = ag.id
-            WHERE ag.name IS NOT NULL and  ag.name != \'\'
+            WHERE ag.name IS NOT NULL AND  ag.name != \'\'
             ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
             GROUP BY ap.agent_id
             ORDER BY total DESC
@@ -156,7 +162,9 @@ class ApiAgentController extends Controller
             FROM appeals as ap
             join agents as ag ON ap.agent_id = ag.id
             join inspectors as insp on ap.inspector_id = insp.id
+            join decisions decision ON decision.id = ap.decision_id
             where ap.agent_id = ' . $agentId . '
+            AND decision.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
             ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
             group by inspector_name ORDER BY total DESC
             LIMIT 0, 25');
@@ -168,22 +176,25 @@ class ApiAgentController extends Controller
     public function getAppealsByDecisionDateData(Request $request)
     {
         $where = [];
-        $successful = null;
-        $failed = null;
 
         if (($year_start = $request->get('year_start') ?? null) && ($year_end = $request->get('year_end'))) {
             array_push($where, "(decision_date BETWEEN '$year_start-01-01' AND '$year_end-12-31')");
+
+
+        }
+        $agentId = $request->get('agent_id');
+        if(!$agentId) {
+            return response()->json([]);
         }
 
-        if ($agentId = $request->get('agent_id')) {
-            $successful = DB::select('select COUNT(*) as success, DATE_FORMAT(ap.decision_date, \'%y\') as formatted_year
+        $successful = DB::select('select COUNT(*) as total, DATE_FORMAT(ap.decision_date, \'%Y\') as formatted_year
                 from appeals as ap
                 LEFT JOIN decisions as d ON ap.decision_id = d.id
                 where ap.agent_id = ' . $agentId . ' AND d.name IN (\'Quashed on Legal Grounds\', \'Planning Permission Granted\', \'Notice Quashed\', \'Allowed with Conditions\', \'Allowed\', \'Allowed in Part\')
                 ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
                 GROUP BY formatted_year');
 
-            $failed = DB::select('select COUNT(*) as failed, DATE_FORMAT(ap.decision_date, \'%y\') as formatted_year
+        $failed = DB::select('select COUNT(*) as total, DATE_FORMAT(ap.decision_date, \'%Y\') as formatted_year
                 from appeals as ap
                 LEFT JOIN decisions as d ON ap.decision_id = d.id
                 where ap.agent_id = ' . $agentId . ' AND d.name IN (\'Notice Varied and Upheld\', \'Notice Upheld\', \'Dismissed\')
@@ -191,21 +202,22 @@ class ApiAgentController extends Controller
                 GROUP BY formatted_year
                 LIMIT 0, 25');
 
-            foreach ($successful as $k => $val) {
-                if ($fail = $this->findFailed($failed, $val->formatted_year)) {
-                    $successful[$k]->fail = $fail->failed;
-                } else {
-                    $successful[$k]->fail = $fail;
-                }
 
-                $val->formatted_year = '20' . $val->formatted_year;
-            }
-
+        $years = [];
+        for ($year = intval($year_start); $year <= $year_end; $year++) {
+            $years[$year] = [
+                'success' => 0,
+                'failed' => 0
+            ];
         }
 
-        return response()->json([
-            'successfulAndFail' => $successful
-        ]);
+        foreach ($successful as $k => $val) {
+            $years[$val->formatted_year]['success'] = $val->total;
+        }
+        foreach ($failed as $k => $val) {
+            $years[$val->formatted_year]['failed'] = $val->total;
+        }
+        return response()->json($years);
     }
 
     function findFailed($failed, $year) {
@@ -228,7 +240,9 @@ class ApiAgentController extends Controller
             $data = DB::select('select count(*) as total, dt.name as name
                 from appeals as ap
                 join development_types as dt on ap.development_type_id = dt.id
+                JOIN decisions d ON d.id = ap.decision_id
                 where ap.agent_id = ' . $agentId . '
+                AND d.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
                 ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
                 group by ap.development_type_id
                 LIMIT 0, 25');
@@ -262,7 +276,6 @@ class ApiAgentController extends Controller
                     ) as success,
 
                     (SELECT COUNT(*)
-
                         FROM appeals
                         join lpas as lp on appeals.lpa_id = lp.id
                         INNER JOIN decisions d ON d.id = appeals.decision_id
@@ -274,7 +287,9 @@ class ApiAgentController extends Controller
                 FROM appeals as ap
                 join agents as ag ON ap.agent_id = ag.id
                 join lpas as lp on ap.lpa_id = lp.id
+                INNER JOIN decisions decision ON decision.id = ap.decision_id
                 where ap.agent_id = ' . $agentId . '
+                AND decision.name NOT IN (\'Unknown\', \'Turned Away\', \'Split Decision\', \'Invalid\', \'Appeal Withdrawn\')
                 ' . (count($where) > 0 ? 'AND ' . join(" AND ", $where) : '') . '
                 group by lpa_name, ap.lpa_id ORDER BY total DESC
                 LIMIT 0, 25');
