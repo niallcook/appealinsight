@@ -148,7 +148,7 @@
                 <section class="">
                     <div class="row">
                         <div class="col-md-12">
-                            <h4>Planning Agent Analytics {{ isset($agent) ?  ' / ' . $agent->name : '' }}</h4>
+                            <h4>Agent Analytics {{ isset($agent) ?  ' / ' . $agent->name : '' }}</h4>
                         </div>
                     </div>
                 </section>
