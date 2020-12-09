@@ -54,7 +54,7 @@ class ProcessingParseCsvJob implements ShouldQueue
      * @param \Exception $exception
      * @return void
      */
-    public function failed(\Exception $exception)
+    public function failed($exception)
     {
         Log::error('Something went wrong ' . $exception);
         Cache::put('processing', false);

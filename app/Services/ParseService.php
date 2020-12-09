@@ -68,7 +68,6 @@ class ParseService
             }
         }
         $data = $csv
-//            ->setLimit(2000)
             ->setOffset(1)
             ->fetchAssoc($titles);
 
@@ -85,13 +84,14 @@ class ParseService
         $typeDetailDataCache = [];
         $jurisdictionDataCache = [];
         $linkStatusDataCache = [];
-        $agentDataCache = [];
-        $agentAltNameDataCache = [];
-        $appellantDataCache = [];
-        $appellantAltNameDataCache = [];
         $decisionDataCache = [];
 
         foreach ($data as $item) {
+
+//            if ($item['Agent'] !== 'Mr Jason Parker') {
+//                continue;
+//            }
+
 
             // LPA updating and caching
             $lpaKey = $item['LPA Name'].$item['ONS LPA Code'];
@@ -289,64 +289,50 @@ class ParseService
             // Link Status - END
 
             // Agent updating and caching
-            $agentKey = $item['Agent'];
-            if(!isset($agentDataCache[$agentKey])) {
-                $agentData = [
-                    'name' => $item['Agent']
-                ];
+            $altAgent = null;
+            $altAgent = AgentAltName::where('alt_name', $item['Agent'])->first();
 
-                $agentData = Agent::updateOrCreate(
-                    $agentData,
-                    $agentData
-                );
-                $agentDataCache[$agentKey] = $agentData->id;
+            if ($altAgent) {
+                $agentData = Agent::find($altAgent->agent_id);
+            } else {
+                $agentData = Agent::where('name', $item['Agent'])->first();
+                if (!$agentData) {
+                    $agentData = Agent::create(['name' => $item['Agent']]);
+                }
             }
             // Agent - END
 
             // Agent Alt Name updating and caching
-            $agentAltNameKey = $item['Agent'];
-            if(!isset($agentAltNameDataCache[$agentAltNameKey])) {
-                $agentAltNameData = [
+            $agentAltNameData = AgentAltName::where('alt_name', $item['Agent'])->first();
+            if (!$agentAltNameData) {
+                AgentAltName::create([
                     'agent_id' => $agentData->id,
-                    'alt_name' => $item['Agent']
-                ];
-
-                $agentAltNameData = AgentAltName::updateOrCreate(
-                    $agentAltNameData,
-                    $agentAltNameData
-                );
-                $agentAltNameDataCache[$agentAltNameKey] = $agentAltNameData->id;
+                    'alt_name' => $agentData->name
+                ]);
             }
             // Agent Alt Name - END
 
             // Appellant updating and caching
-            $appellantKey = $item['Appellant'];
-            if(!isset($appellantDataCache[$appellantKey])) {
-                $appellantData = [
-                    'name' => $item['Appellant']
-                ];
+            $altAppellant = null;
+            $altAppellant = AppellantAltName::where('alt_name', $item['Appellant'])->first();
 
-                $appellantData = Appellant::updateOrCreate(
-                    $appellantData,
-                    $appellantData
-                );
-                $appellantDataCache[$appellantKey] = $appellantData->id;
+            if ($altAppellant) {
+                $appellantData = Appellant::find($altAppellant->appellant_id);
+            } else {
+                $appellantData = Appellant::where('name', $item['Appellant'])->first();
+                if (!$appellantData) {
+                    $appellantData = Appellant::create(['name' => $item['Appellant']]);
+                }
             }
             // Appellant - END
 
             // Appellant Alt Name updating and caching
-            $appellantAltNameKey = $item['Appellant'];
-            if(!isset($appellantAltNameDataCache[$appellantAltNameKey])) {
-                $appellantAltNameData = [
-                    'alt_name' => $item['Appellant'],
-                    'appellant_id' => $appellantData->id
-                ];
-
-                $appellantAltNameData = AppellantAltName::updateOrCreate(
-                    $appellantAltNameData,
-                    $appellantAltNameData
-                );
-                $appellantAltNameDataCache[$appellantAltNameKey] = $appellantAltNameData->id;
+            $appellantAltNameData = AppellantAltName::where('alt_name', $item['Appellant'])->first();
+            if (!$appellantAltNameData) {
+                AppellantAltName::create([
+                    'appellant_id' => $appellantData->id,
+                    'alt_name' => $appellantData->name
+                ]);
             }
             // Appellant Alt Name - END
 
@@ -392,13 +378,13 @@ class ParseService
                 'development_or_allegation' =>                          (string) $item['Development Or Allegation'],
                 'type_of_appeal_id' =>                                  (int) $typeOfAppealDataCache[$typeOfAppealKey],
                 'lpa_id' =>                                             (int) $lpaDataCache[$lpaKey],
-                'appellant_id' =>                                       (int) $appellantDataCache[$appellantKey],
+                'appellant_id' =>                                       (int) $appellantData->id,
                 'development_type_id' =>                                (int) $developmentTypeDataCache[$developmentTypeKey],
                 'inspector_id' =>                                       (int) $inspectorDataCache[$inspectorKey],
                 'site_town_id' =>                                       (int) $siteTownDataCache[$siteTownKey],
                 'site_country_id' =>                                    (int) $siteCountryDataCache[$siteCountryKey],
                 'site_county_id' =>                                     (int) $siteCountyDataCache[$siteCountyKey],
-                'agent_id' =>                                           (int) $agentDataCache[$agentKey],
+                'agent_id' =>                                           (int) $agentData->id,
                 'decision_id' =>                                        (int) $decisionDataCache[$decisionKey],
                 'procedure_id' =>                                       (int) $procedureDataCache[$procedureKey],
                 'appeal_type_reason_id' =>                              (int) $appealTypeReasonDataCache[$appealTypeReasonKey],
@@ -415,28 +401,41 @@ class ParseService
                 'date_not_recovered_or_derecovered' =>                  $this->extractTimestamp($item['Date Not Recovered Or Derecovered'], $this->validateFormatTimestamp($item['Date Not Recovered Or Derecovered']), 'date_not_recovered_or_derecovered'),
             ];
 
-            Appeal::updateOrCreate(
-                [
-                    'reference' => $appealData['reference'],
-                ],
-                $appealData
-            );
+            try {
+                Appeal::updateOrCreate(
+                    [
+                        'reference' => $appealData['reference'],
+                    ],
+                    $appealData
+                );
+
+            } catch (\Exception $exception) {
+                Log::error('Wrong updateOrCreate Appeal: "', [$exception]);
+            }
         }
     }
 
     public function validateFormatTimestamp($data): string
     {
-//        Log::error('TIMESTAMP!!!!!!!!!!!!!!!', [$data, strlen($data)]);
         return strpos($data, '/') ? 'd/m/y' : 'd-M-y';
     }
 
-    public function extractTimestamp($date, $format, $column)
+    public function extractTimestamp($date, $format, $column): ?string
     {
         if(!$date) return null;
         try {
+
+            $arr = ["42026", "42016", "41992", "41824"];
+            if (array_search($date, $arr)) {
+                Log::error('Wrong format date in array: "' . $date . '" for format "' . $format . ' in column ' . $column);
+                return null;
+            }
+
             return Carbon::createFromFormat($format, $date)->toDateString();
         } catch (\Exception $exception) {
+            Log::error('Type', [gettype($date)]);
             Log::error('Wrong format date: "' . $date . '" for format "' . $format . ' in column ' . $column);
+            Log::error('Appeals count "' . Appeal::count());
             return null;
         }
     }

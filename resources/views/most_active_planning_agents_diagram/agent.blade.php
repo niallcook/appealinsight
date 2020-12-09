@@ -9,13 +9,13 @@
 {{--    <div class="container">--}}
         <div class="chart-column-with-rotated-labels"></div>
 
-        <h1>Table Planning Agent</h1>
+        <h1>All Planning Agents</h1>
         <table class="table table-bordered data-table">
             <thead>
             <tr>
                 <th></th>
-                <th>Planning Agent</th>
-                <th width="100px">Appeal Count</th>
+                <th>Agent Name</th>
+                <th width="100px">Appeals</th>
                 <th width="100px">Success Rate</th>
             </tr>
             </thead>

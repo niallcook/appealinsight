@@ -10,7 +10,7 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}"></script>
+{{--    <script src="{{ asset('js/app.js') }}"></script>--}}
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -19,13 +19,16 @@
     <!-- Styles -->
     @yield('stylesheets')
 
-    <link rel="stylesheet" href="{{ asset('css/bower_components/bootstrap/dist/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.bootstrap.min.css" />
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{ asset('css/bower_components/font-awesome/css/font-awesome.min.css') }}">
     <!-- Ionicons -->
     <link rel="stylesheet" href="{{ asset('css/bower_components/Ionicons/css/ionicons.min.css') }}">
     <!-- DataTables -->
-    <link rel="stylesheet" href="{{ asset('css/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css') }}">
+{{--    <link rel="stylesheet" href="{{ asset('css/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css') }}">--}}
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('/css/AdminLTE.min.css') }}">
     <!-- AdminLTE Skins. Choose a skin from the css/skins
@@ -36,6 +39,24 @@
     <link href="{{ asset('css/skins/skin-blue.css') }}" rel="stylesheet">
     {{--    <link href="{{ asset('css/app.css') }}" rel="stylesheet">--}}
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+
+{{--    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>--}}
+{{--    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>--}}
+    <style>
+        .example-modal .modal {
+            position: relative;
+            top: auto;
+            bottom: auto;
+            right: auto;
+            left: auto;
+            display: block;
+            z-index: 1;
+        }
+
+        .example-modal .modal {
+            background: transparent !important;
+        }
+    </style>
 </head>
 <body class="hold-transition skin-blue layout-top-nav">
 <div class="wrapper">
@@ -45,7 +66,8 @@
             <div class="container">
                 <div class="navbar-header">
                     <a class="navbar-brand" href="{{ url('/') }}">
-                        {{ config('app.name', 'Laravel') }}
+{{--                        {{ config('app.name', 'Laravel') }}--}}
+                        Appeal Insight
                     </a>
                 </div>
 
@@ -90,8 +112,7 @@
                                 <li class="user-footer">
                                     <div class="pull-left">
                                         @if (Auth::user()->role->id === 2)
-                                            <button type="submit" class="btn btn-primary btn-upload-file"
-                                                    data-toggle="modal" data-target="#uploadFile">
+                                            <button type="submit" class="btn btn-primary btn-upload-file" data-toggle="modal" data-target="#uploadFile">
                                                 Upload file
                                             </button>
                                         @endif
@@ -121,16 +142,21 @@
     </header>
     <!-- Full Width Column -->
     <div class="content-wrapper">
-        <div class="container-fluid">
-            <!-- Content Header (Page header) -->
-            <section class="content-header">
-{{--                <ol class="breadcrumb">--}}
-{{--                    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>--}}
-{{--                    <li><a href="#">Layout</a></li>--}}
-{{--                    <li class="active">Top Navigation</li>--}}
-{{--                </ol>--}}
-            </section>
+        @auth
+        <div class="custom-style-content-header">
+            <div class="">
+                <section class="">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4>Agent Analytics {{ isset($agent) ?  ' / ' . $agent->name : '' }}</h4>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+        @endauth
 
+        <div class="container-fluid">
             <!-- Main content -->
             <section class="content">
                 @yield('content')
@@ -140,18 +166,43 @@
         <!-- /.container -->
     </div>
     <!-- /.content-wrapper -->
-    <footer class="main-footer">
-        <div class="container">
-            <div class="pull-right hidden-xs">
-                <b>Version</b> 2.4.0
+
+    <div class="modal fade" id="uploadFile">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="fileForm" name="fileForm" class="form-inline">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Modal</h4>
+                        <div class="responseInfo" role="alert"></div>
+                    </div>
+                    <div class="modal-body">
+                            <div class="form-group mb-12">
+                                <label for="csv_file" class="sr-only">Import CSV</label>
+                                <input type="file" id="csv_file" name="csv_file">
+                            </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="send" value="send">Send
+                        </button>
+    {{--                    <button type="button" class="btn btn-primary">Save changes</button>--}}
+                    </div>
+                </form>
             </div>
-            <strong>Copyright &copy; 2014-2016 <a href="https://adminlte.io">Almsaeed Studio</a>.</strong> All rights
-            reserved.
+            <!-- /.modal-content -->
         </div>
-        <!-- /.container -->
-    </footer>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
 </div>
 @yield('scripts')
+
+@guest
+<script src="{{ asset('css/bower_components/jquery/dist/jquery.min.js')}}"></script>
+@endguest
 <script>
     $(document).ready(function (e) {
         $.ajaxSetup({
@@ -163,6 +214,7 @@
             e.preventDefault();
             $('.responseInfo').empty();
             let formData = new FormData(this);
+            $('#send').prop('disabled', true);
             $.ajax({
                 url: "{{ url('upload-file') }}",
                 type: "POST",
@@ -179,10 +231,12 @@
                         $('#fileForm').trigger("reset");
                         $('.responseInfo').empty();
                         $('#uploadFile').modal('hide');
-                    }, 1200);
+                        $('#send').prop('disabled', false);
+                    }, 1500);
                 },
                 error: function (data) {
                     console.log(data)
+                    $('#send').prop('disabled', false);
                     const errors = data.responseJSON.errors.csv_file;
                     errors.forEach(function (element) {
                         $('.responseInfo').append('<div class="alert alert-danger" role="alert">\n' +
