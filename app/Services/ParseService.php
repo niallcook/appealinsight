@@ -417,7 +417,7 @@ class ParseService
 
     public function validateFormatTimestamp($data): string
     {
-        return strpos($data, '/') ? 'd/m/y' : 'd-M-y';
+        return strpos($data, '/') ? 'd/m/Y' : 'd-M-y';
     }
 
     public function extractTimestamp($date, $format, $column): ?string
